@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name">Sedesem</string>
+    <string name="esc_ner_curp">Escáner CURP</string>
+</resources>

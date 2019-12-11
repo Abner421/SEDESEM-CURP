@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<TableLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:stretchColumns="*">
+
+    <TableRow android:paddingTop="30dp"
+        android:id="@+id/tablaPedorra">
+
+        <TextView
+            android:padding="3dip"
+            android:id="@+id/txtViewCURP"
+            android:text="CURP"
+            android:textAlignment="center" />
+
+        <TextView
+            android:padding="3dip"
+            android:id="@+id/txtViewApPat"
+            android:text="Apellido Paterno"
+            android:textAlignment="center" />
+
+        <TextView
+            android:padding="3dip"
+            android:id="@+id/txtViewApMat"
+            android:text="Apellido Materno"
+            android:textAlignment="center" />
+
+        <TextView
+            android:padding="3dip"
+            android:id="@+id/txtViewNombres"
+            android:text="Nombre(s)"
+            android:textAlignment="center" />
+    </TableRow>
+
+</TableLayout>

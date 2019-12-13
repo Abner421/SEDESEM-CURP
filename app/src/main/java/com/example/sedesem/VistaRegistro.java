@@ -18,9 +18,13 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
 import java.io.*;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.Vector;
 
 import com.example.sedesem.BaseDatos.Registros;
+import com.example.sedesem.BaseDatos.arregloInfo;
 
 public class VistaRegistro extends AppCompatActivity implements View.OnClickListener {
 
@@ -32,10 +36,12 @@ public class VistaRegistro extends AppCompatActivity implements View.OnClickList
     private static final int PERMISSION_REQUEST_CODE = 100;
     ScannedBarcodeActivity aux = new ScannedBarcodeActivity();
 
+    public Vector<String> datos = new Vector<>();
+
     //Arreglo info.
     Object arrInfo[] = new Object[8];
 
-    Registros reg = new Registros();
+    Registros base = new Registros();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,7 +63,7 @@ public class VistaRegistro extends AppCompatActivity implements View.OnClickList
 
     private void llenaCampos() { //Coloca los datos recibidos del archivo
         String estado = Environment.getExternalStorageState();
-        Vector<String> datos = new Vector<>();
+
         if (Environment.MEDIA_MOUNTED.equals(estado)) {
             if (Build.VERSION.SDK_INT >= 23) {
                 if (checkPermission()) {
@@ -90,6 +96,9 @@ public class VistaRegistro extends AppCompatActivity implements View.OnClickList
                         FechaNac.setText(datos.get(5));
                         Entidad.setText(datos.get(6));
                         Region.setText(datos.get(7));
+
+//                        base.saveNameToLocalStorage(datos.get(0),datos.get(1),datos.get(2), datos.get(3),
+  //                              datos.get(4), datos.get(5), datos.get(6), Integer.parseInt(datos.get(7)),0);
 
                         arrInfo[0] = datos.get(0); //Arreglo de objetos para enviar
                         arrInfo[1] = datos.get(1);
@@ -127,6 +136,7 @@ public class VistaRegistro extends AppCompatActivity implements View.OnClickList
                             texto.append("\n");
                         }
                         br.close();
+
                     } catch (IOException e) {
                     }
                 }
@@ -150,10 +160,24 @@ public class VistaRegistro extends AppCompatActivity implements View.OnClickList
                 break;
             case R.id.btnok:
                 //Implementar función para mandar info.
-                reg.setArreglo(arrInfo);
+                com.example.sedesem.BaseDatos.arregloInfo arregloInfo = new arregloInfo(arrInfo);
+
+                try{
+                    String match = "yyyy/mm/dd";
+                    File sdcard = Environment.getExternalStorageDirectory();
+                    File file = new File(sdcard.getAbsolutePath() + "/text");
+                    //DateFormat df = new SimpleDateFormat(match);
+                    Date ultimo = new Date(file.lastModified());
+                    /*String archivo = df.format(ultimo);*/
+                    Toast.makeText(getApplicationContext(), "El archivo es:"+ultimo.toString(), Toast.LENGTH_SHORT).show();
+                }catch(Exception e) { }
+
+//                base.saveNameToLocalStorage(datos.get(0), datos.get(1), datos.get(2), datos.get(3), datos.get(4),
+  //                      datos.get(5), datos.get(6), Integer.parseInt(datos.get(7)), 0);
+
                 //Función
                 Toast.makeText(getApplicationContext(), "Guardado exitosamente", Toast.LENGTH_SHORT).show();
-                startActivity(new Intent(VistaRegistro.this, MainActivity.class));
+                startActivity(new Intent(VistaRegistro.this, Registros.class));
                 break;
         }
     }
@@ -190,4 +214,16 @@ public class VistaRegistro extends AppCompatActivity implements View.OnClickList
                 break;
         }
     }
+
+    public Object mostrarVector(Object[] array){
+        for (int i = 0; i < array.length; i++) {
+            arrInfo[i] = array[i];
+        }
+        return arrInfo;
+    }
+
+    /*public Object getArreglo(){
+        Object[] arreglo = mostrarVector(arrInfo);
+        return arreglo;
+    }*/
 }

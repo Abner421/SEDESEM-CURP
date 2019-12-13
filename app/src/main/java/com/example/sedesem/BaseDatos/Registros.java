@@ -16,12 +16,16 @@ import android.database.Cursor;
 import android.net.ConnectivityManager;
 import android.content.Context;
 import android.os.Bundle;
+import android.os.Environment;
 import android.provider.CalendarContract;
 import android.provider.ContactsContract;
+import android.util.Log;
 import android.view.View;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.android.volley.AuthFailureError;
@@ -35,10 +39,19 @@ import com.android.volley.toolbox.Volley;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.StringTokenizer;
+import java.util.Vector;
 
 import com.example.sedesem.R;
 
@@ -47,7 +60,6 @@ import com.example.sedesem.VistaRegistro;
 
 public class Registros extends AppCompatActivity implements View.OnClickListener {
 
-    Object arrInfo[] = new Object[8];
     /*
      * this is the url to our webservice
      * make sure you are using the ip instead of localhost
@@ -69,6 +81,8 @@ public class Registros extends AppCompatActivity implements View.OnClickListener
     private EditText editEntidad;
     private EditText editRegion;
     private ListView listViewNames;
+    private ListView archs;
+    private TextView txt;
 
     //List to store all the names
     private List<Name> names; //CURP
@@ -80,6 +94,7 @@ public class Registros extends AppCompatActivity implements View.OnClickListener
     private List<Entidad> entidads;
     private List<Region> regions;
 
+    private Object[] info;
 
     //1 means data is synced and 0 means data is not synced
     public static final int NAME_SYNCED_WITH_SERVER = 1;
@@ -93,6 +108,11 @@ public class Registros extends AppCompatActivity implements View.OnClickListener
 
     //adapterobject for list view
     private NameAdapter nameAdapter;
+
+    Vector<String> vecArchs = new Vector<>();
+    File[] files ;
+
+    List<String> lineas = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -110,7 +130,11 @@ public class Registros extends AppCompatActivity implements View.OnClickListener
         entidads = new ArrayList<>();
         regions = new ArrayList<>();
 
-        /*buttonSave = findViewById(R.id.buttonSave);
+        info = new Object[7];
+
+        archs = findViewById(R.id.archs);
+
+        buttonSave = findViewById(R.id.buttonSave);/*
         editTextName = findViewById(R.id.editTextName); //CURP
         editNombre = findViewById(R.id.editNombre);
         editApPat = findViewById(R.id.editApPat);
@@ -119,10 +143,11 @@ public class Registros extends AppCompatActivity implements View.OnClickListener
         editFechaNac = findViewById(R.id.editFechaNac);
         editEntidad = findViewById(R.id.editEntidad);
         editRegion = findViewById(R.id.editRegion);*/
-        listViewNames = findViewById(R.id.listViewNames);
+        //listViewNames = findViewById(R.id.listViewNames);
+
 
         //adding click listener to button
-        //buttonSave.setOnClickListener(this);
+        buttonSave.setOnClickListener(this);
 
         //calling the method to load all the stored names
         loadNames();
@@ -149,7 +174,8 @@ public class Registros extends AppCompatActivity implements View.OnClickListener
      * with updated sync status
      * */
     private void loadNames() {
-        names.clear();
+
+        /*names.clear();
         Cursor cursor = db.getNames();
         if (cursor.moveToFirst()) {
             do {
@@ -225,7 +251,7 @@ public class Registros extends AppCompatActivity implements View.OnClickListener
             cursor = db.getRegiones();
             do {
                 Region region = new Region(
-                        cursor.getString(cursor.getColumnIndex(DatabaseHelper.COLUMN_REGION)),
+                        cursor.getInt(cursor.getColumnIndex(DatabaseHelper.COLUMN_REGION)),
                         cursor.getInt(cursor.getColumnIndex(DatabaseHelper.COLUMN_STATUS))
                 );
                 regions.add(region);
@@ -234,7 +260,27 @@ public class Registros extends AppCompatActivity implements View.OnClickListener
 
         nameAdapter = new NameAdapter(this, R.layout.names, names, nombres, apPats, apMats);
         //nameAdapter = new NameAdapter(this, R.layout.names, names);
-        listViewNames.setAdapter(nameAdapter);
+        listViewNames.setAdapter(nameAdapter);*/
+        try {
+            File sdcard = Environment.getExternalStorageDirectory();
+            File file = new File(sdcard.getAbsolutePath() + "/text");
+
+            files = file.listFiles();
+
+
+            for (int i = 0; i < files.length; i++) {
+                String sub = files[i].getName();
+                StringTokenizer st = new StringTokenizer(sub, ".");
+                vecArchs.add(st.nextToken());
+            }
+
+            ArrayAdapter<String> adapt = new ArrayAdapter<>(
+                    this, android.R.layout.simple_list_item_1, vecArchs);
+
+            archs.setAdapter(adapt);
+        } catch (Exception e) {
+        }
+
     }
 
     /*
@@ -252,15 +298,43 @@ public class Registros extends AppCompatActivity implements View.OnClickListener
         progressDialog.setMessage("Guardando...");
         progressDialog.show();
 
+        String line;
 
-        final String name = editTextName.getText().toString().trim();
-        final String nombre = editNombre.getText().toString().trim();
-        final String apPat = editApPat.getText().toString().trim();
-        final String apMat = editApMat.getText().toString().trim();
-        final String sexo = editSexo.getText().toString().trim();
-        final String fechaNac = editFechaNac.getText().toString().trim();
-        final String entidad = editEntidad.getText().toString().trim();
-        final int region = Integer.parseInt(editRegion.getText().toString());
+        File sdcard = Environment.getExternalStorageDirectory();
+        File file = new File(sdcard.getAbsolutePath() + "/text/"+vecArchs.lastElement()+".txt");
+
+        try {
+
+            FileInputStream fileInputStream = new FileInputStream(file);
+            InputStreamReader inputStreamReader = new InputStreamReader(fileInputStream);
+            BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
+            StringBuilder stringBuilder = new StringBuilder();
+
+            while ((line = bufferedReader.readLine()) != null) {
+                stringBuilder.append(line + System.getProperty("line.separator"));
+                lineas.add(line);
+            }
+            fileInputStream.close();
+            line = stringBuilder.toString();
+
+            bufferedReader.close();
+        } catch (FileNotFoundException ex) {
+            //Log.d(TAG, ex.getMessage());
+        } catch (IOException ex) {
+            //Log.d(TAG, ex.getMessage());
+        }
+
+
+//      info = new VistaRegistro().getArreglo();
+        final String name = lineas.get(0);
+        final String nombre = lineas.get(1);
+        final String apPat = lineas.get(2);
+        final String apMat = lineas.get(3);
+        final String sexo = lineas.get(4);
+        final String fechaNac = lineas.get(5);
+        final String entidad = lineas.get(6);
+        final int region = Integer.parseInt(lineas.get(7));
+
 
         StringRequest stringRequest = new StringRequest(Request.Method.POST, URL_SAVE_NAME,
                 new Response.Listener<String>() {
@@ -294,7 +368,7 @@ public class Registros extends AppCompatActivity implements View.OnClickListener
             @Override
             protected Map<String, String> getParams() throws AuthFailureError {
                 Map<String, String> params = new HashMap<>();
-                params.put("name", name);
+                //params.put("name", name);
                 return params;
             }
         };
@@ -303,15 +377,33 @@ public class Registros extends AppCompatActivity implements View.OnClickListener
     }
 
     //saving the name to local storage sqlite
-    private void saveNameToLocalStorage(String name_id, String nombre, String apPat, String apMat, String sexo,
-                                        String fechaNac, String entidad, int region, int status) {
-        editTextName.setText("");
+    public void saveNameToLocalStorage(String name_id, String nombre, String apPat, String apMat, String sexo, //Modificado
+                                       String fechaNac, String entidad, int region, int status) {
+        //editTextName.setText("");
         db.addName(name_id, nombre, apPat, apMat, sexo, fechaNac, entidad, region, status);
         Name n = new Name(name_id, status);
         names.add(n);
 
         Nombre nom = new Nombre(nombre, status);
         nombres.add(nom);
+
+        ApPat apPat1 = new ApPat(apPat, status);
+        apPats.add(apPat1);
+
+        ApMat apMat1 = new ApMat(apMat, status);
+        apMats.add(apMat1);
+
+        Sexo sex = new Sexo(sexo, status);
+        sexos.add(sex);
+
+        FechaNac nacs = new FechaNac(fechaNac, status);
+        FechaNacs.add(nacs);
+
+        Entidad ent = new Entidad(entidad, status);
+        entidads.add(ent);
+
+        Region reg = new Region(region, status);
+        regions.add(reg);
         refreshList();
     }
 

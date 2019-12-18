@@ -4,6 +4,8 @@ import android.Manifest;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.database.sqlite.SQLiteDatabase;
+import android.icu.util.Output;
 import android.os.Bundle;
 
 import android.app.ProgressDialog;
@@ -36,15 +38,21 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -53,8 +61,11 @@ import java.util.Map;
 import java.util.StringTokenizer;
 import java.util.Vector;
 
+import com.example.sedesem.MainActivity;
+import com.example.sedesem.PictureBarcodeActivity;
 import com.example.sedesem.R;
 
+import com.example.sedesem.ScannedBarcodeActivity;
 import com.example.sedesem.VistaRegistro;
 
 
@@ -72,6 +83,7 @@ public class Registros extends AppCompatActivity implements View.OnClickListener
 
     //View objects
     private Button buttonSave;
+    private Button btnSync;
     private EditText editTextName; //CURP
     private EditText editNombre;
     private EditText editApPat;
@@ -101,7 +113,7 @@ public class Registros extends AppCompatActivity implements View.OnClickListener
     public static final int NAME_NOT_SYNCED_WITH_SERVER = 0;
 
     //a broadcast to know weather the data is synced or not
-    public static final String DATA_SAVED_BROADCAST = "com.example.syncmysql";
+    public static final String DATA_SAVED_BROADCAST = "com.example.sedesem";
 
     //Broadcast receiver to know the sync status
     private BroadcastReceiver broadcastReceiver;
@@ -109,8 +121,10 @@ public class Registros extends AppCompatActivity implements View.OnClickListener
     //adapterobject for list view
     private NameAdapter nameAdapter;
 
+    private ArrayAdapter<String> adapt;
+
     Vector<String> vecArchs = new Vector<>();
-    File[] files ;
+    File[] files;
 
     List<String> lineas = new ArrayList<>();
 
@@ -134,6 +148,7 @@ public class Registros extends AppCompatActivity implements View.OnClickListener
 
         archs = findViewById(R.id.archs);
 
+        btnSync = findViewById(R.id.btnSync);
         buttonSave = findViewById(R.id.buttonSave);/*
         editTextName = findViewById(R.id.editTextName); //CURP
         editNombre = findViewById(R.id.editNombre);
@@ -148,6 +163,7 @@ public class Registros extends AppCompatActivity implements View.OnClickListener
 
         //adding click listener to button
         buttonSave.setOnClickListener(this);
+        btnSync.setOnClickListener(this);
 
         //calling the method to load all the stored names
         loadNames();
@@ -274,8 +290,9 @@ public class Registros extends AppCompatActivity implements View.OnClickListener
                 vecArchs.add(st.nextToken());
             }
 
-            ArrayAdapter<String> adapt = new ArrayAdapter<>(
+            adapt = new ArrayAdapter<>(
                     this, android.R.layout.simple_list_item_1, vecArchs);
+
 
             archs.setAdapter(adapt);
         } catch (Exception e) {
@@ -287,11 +304,11 @@ public class Registros extends AppCompatActivity implements View.OnClickListener
      * this method will simply refresh the list
      * */
     private void refreshList() {
-        nameAdapter.notifyDataSetChanged();
+        adapt.notifyDataSetChanged();
     }
 
     /*
-     * this method is saving the name to ther server MySQL
+     * this method is saving the name to their server MySQL
      * */
     private void saveNameToServer() {
         final ProgressDialog progressDialog = new ProgressDialog(this);
@@ -301,7 +318,7 @@ public class Registros extends AppCompatActivity implements View.OnClickListener
         String line;
 
         File sdcard = Environment.getExternalStorageDirectory();
-        File file = new File(sdcard.getAbsolutePath() + "/text/"+vecArchs.lastElement()+".txt");
+        File file = new File(sdcard.getAbsolutePath() + "/text/" + vecArchs.lastElement() + ".txt");
 
         try {
 
@@ -326,15 +343,14 @@ public class Registros extends AppCompatActivity implements View.OnClickListener
 
 
 //      info = new VistaRegistro().getArreglo();
-        final String name = lineas.get(0);
-        final String nombre = lineas.get(1);
-        final String apPat = lineas.get(2);
-        final String apMat = lineas.get(3);
+        final String name = lineas.get(0).trim();
+        final String nombre = lineas.get(3);
+        final String apPat = lineas.get(1);
+        final String apMat = lineas.get(2);
         final String sexo = lineas.get(4);
         final String fechaNac = lineas.get(5);
         final String entidad = lineas.get(6);
         final int region = Integer.parseInt(lineas.get(7));
-
 
         StringRequest stringRequest = new StringRequest(Request.Method.POST, URL_SAVE_NAME,
                 new Response.Listener<String>() {
@@ -347,10 +363,12 @@ public class Registros extends AppCompatActivity implements View.OnClickListener
                                 //if there is a success
                                 //storing the name to sqlite with status synced
                                 saveNameToLocalStorage(name, nombre, apPat, apMat, sexo, fechaNac, entidad, region, NAME_SYNCED_WITH_SERVER);
+                                Toast.makeText(getApplicationContext(), "Guardado exitosamente con status: 1", Toast.LENGTH_SHORT).show();
                             } else {
                                 //if there is some error
                                 //saving the name to sqlite with status unsynced
                                 saveNameToLocalStorage(name, nombre, apPat, apMat, sexo, fechaNac, entidad, region, NAME_NOT_SYNCED_WITH_SERVER);
+                                Toast.makeText(getApplicationContext(), "Guardado exitosamente con status: 0", Toast.LENGTH_SHORT).show();
                             }
                         } catch (JSONException e) {
                             e.printStackTrace();
@@ -374,6 +392,8 @@ public class Registros extends AppCompatActivity implements View.OnClickListener
         };
 
         VolleySingleton.getInstance(this).addToRequestQueue(stringRequest);
+
+        startActivity(new Intent(Registros.this, ScannedBarcodeActivity.class));
     }
 
     //saving the name to local storage sqlite
@@ -407,8 +427,114 @@ public class Registros extends AppCompatActivity implements View.OnClickListener
         refreshList();
     }
 
+    public void sincronizarMySQL() throws JSONException, IOException {
+        //DEBEN DEFINIRSE NUEVOS CURSORES PARA CADA TIPO DE ARREGLO QUE SE REQUIERA
+        //ArrayList<String> personas = new ArrayList<>();
+        ArrayList<Regs> personas = new ArrayList<>();
+        int contador = db.getCounter();
+        Cursor cursor = db.getNames();
+        Cursor cNombre = db.getNombres();
+        Cursor cApPat = db.getApPats();
+        Cursor cApMat = db.getApMats();
+        Cursor cSexo = db.getSexos();
+        Cursor cFechaNac = db.getFechaNacs();
+        Cursor cEntidad = db.getEntidades();
+        Cursor cRegion = db.getRegiones();
+
+        names.clear();
+        if (cursor.moveToFirst() && cNombre.moveToFirst() && cApPat.moveToFirst() && cApMat.moveToFirst() && cSexo.moveToFirst()
+                && cFechaNac.moveToFirst() && cEntidad.moveToFirst() && cRegion.moveToFirst()) {
+            do {
+                Name name = new Name( //CURP
+                        cursor.getString(cursor.getColumnIndex(DatabaseHelper.COLUMN_ID)),
+                        cursor.getInt(cursor.getColumnIndex(DatabaseHelper.COLUMN_STATUS))
+                );
+                names.add(name); //CURP
+            } while (cursor.moveToNext());
+
+            nombres.clear();
+            //cursor = db.getNombres();
+
+            do {
+                Nombre nombre = new Nombre(
+                        cNombre.getString(cursor.getColumnIndex(DatabaseHelper.COLUMN_NOMBRE)),
+                        cNombre.getInt(cursor.getColumnIndex(DatabaseHelper.COLUMN_STATUS))
+                );
+                nombres.add(nombre);
+            } while (cNombre.moveToNext());
+
+            apPats.clear();
+            do {
+                ApPat apPat = new ApPat(
+                        cApPat.getString(cursor.getColumnIndex(DatabaseHelper.COLUMN_APPAT)),
+                        cApPat.getInt(cursor.getColumnIndex(DatabaseHelper.COLUMN_STATUS))
+                );
+                apPats.add(apPat);
+            } while (cApPat.moveToNext());
+
+            apMats.clear();
+            do {
+                ApMat apMat = new ApMat(
+                        cApMat.getString(cursor.getColumnIndex(DatabaseHelper.COLUMN_APMAT)),
+                        cApMat.getInt(cursor.getColumnIndex(DatabaseHelper.COLUMN_STATUS))
+                );
+                apMats.add(apMat);
+            } while (cApMat.moveToNext());
+
+            sexos.clear();
+            do {
+                Sexo sexo = new Sexo(
+                        cSexo.getString(cursor.getColumnIndex(DatabaseHelper.COLUMN_SEXO)),
+                        cSexo.getInt(cursor.getColumnIndex(DatabaseHelper.COLUMN_STATUS))
+                );
+                sexos.add(sexo);
+            } while (cSexo.moveToNext());
+
+            FechaNacs.clear();
+            do {
+                FechaNac FechaNac = new FechaNac(
+                        cFechaNac.getString(cursor.getColumnIndex(DatabaseHelper.COLUMN_FECHANAC)),
+                        cFechaNac.getInt(cursor.getColumnIndex(DatabaseHelper.COLUMN_STATUS))
+                );
+                FechaNacs.add(FechaNac);
+            } while (cFechaNac.moveToNext());
+
+            entidads.clear();
+            do {
+                Entidad entidad = new Entidad(
+                        cEntidad.getString(cursor.getColumnIndex(DatabaseHelper.COLUMN_ENTIDAD)),
+                        cEntidad.getInt(cursor.getColumnIndex(DatabaseHelper.COLUMN_STATUS))
+                );
+                entidads.add(entidad);
+            } while (cEntidad.moveToNext());
+
+            regions.clear();
+            do {
+                Region region = new Region(
+                        cRegion.getInt(cursor.getColumnIndex(DatabaseHelper.COLUMN_REGION)),
+                        cRegion.getInt(cursor.getColumnIndex(DatabaseHelper.COLUMN_STATUS))
+                );
+                regions.add(region);
+            } while (cRegion.moveToNext());
+
+        }
+    }
+
     @Override
     public void onClick(View view) {
-        saveNameToServer();
+        switch (view.getId()) {
+            case R.id.buttonSave:
+                saveNameToServer();
+                break;
+            case R.id.btnSync:
+                try {
+                    sincronizarMySQL();
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                break;
+        }
     }
 }

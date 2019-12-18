@@ -47,13 +47,13 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         String stmt = "CREATE TABLE " + TABLE_NAME
                 + "(" + COLUMN_ID +
                 " VARCHAR PRIMARY KEY NOT NULL, " + COLUMN_NOMBRE +
-                " VARCHAR NOT NULL, " + COLUMN_APPAT +
-                " VARCHAR NOT NULL, " + COLUMN_APMAT +
-                " VARCHAR NOT NULL, " + COLUMN_SEXO +
-                " VARCHAR NOT NULL, " + COLUMN_FECHANAC +
-                " DATE NOT NULL, " + COLUMN_ENTIDAD +
-                " INTEGER NOT NULL, " + COLUMN_REGION +
-                " INTEGER NOT NULL, " + COLUMN_STATUS +
+                " VARCHAR, " + COLUMN_APPAT +
+                " VARCHAR, " + COLUMN_APMAT +
+                " VARCHAR, " + COLUMN_SEXO +
+                " VARCHAR, " + COLUMN_FECHANAC +
+                " DATE, " + COLUMN_ENTIDAD +
+                " INTEGER, " + COLUMN_REGION +
+                " INTEGER, " + COLUMN_STATUS +
                 " TINYINT);";
         db.execSQL(stmt);
     }
@@ -61,7 +61,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     //upgrading the database
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-        String sql = "DROP TABLE IF EXISTS Persons";
+        String sql = "DROP TABLE IF EXISTS registros";
         db.execSQL(sql);
         onCreate(db);
     }
@@ -80,7 +80,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         contentValues.put(COLUMN_ID, name_id);
         contentValues.put(COLUMN_NOMBRE, nombre);
         contentValues.put(COLUMN_APPAT, apPat);
-        contentValues.put(COLUMN_APPAT, apMat);
+        contentValues.put(COLUMN_APMAT, apMat);
         contentValues.put(COLUMN_SEXO, Sexo);
         contentValues.put(COLUMN_FECHANAC, fechaNac);
         contentValues.put(COLUMN_ENTIDAD, Entidad);
@@ -175,6 +175,15 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         String sql = "SELECT * FROM " + TABLE_NAME + " WHERE " + COLUMN_STATUS + " = 0;";
         Cursor c = db.rawQuery(sql, null);
         return c;
+    }
+
+    public int getCounter(){
+        String counterSQL = "SELECT * from " + TABLE_NAME;
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.rawQuery(counterSQL, null);
+        int count = cursor.getCount();
+        cursor.close();
+        return count;
     }
 }
 

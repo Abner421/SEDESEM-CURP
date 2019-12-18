@@ -43,6 +43,7 @@ public class ScannedBarcodeActivity extends AppCompatActivity {
     private CameraSource cameraSource;
     private static final int REQUEST_CAMERA_PERMISSION = 201;
     Button btnAction;
+    Button btnTerminar;
     String intentData = "";
     boolean isEmail = false;
 
@@ -65,6 +66,14 @@ public class ScannedBarcodeActivity extends AppCompatActivity {
         txtBarcodeValue = findViewById(R.id.txtBarcodeValue);
         surfaceView = findViewById(R.id.surfaceView);
         btnAction = findViewById(R.id.btnAction);
+        btnTerminar = findViewById(R.id.btnTerminar);
+
+        btnTerminar.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(ScannedBarcodeActivity.this, MainActivity.class));
+            }
+        });
 
         btnAction.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -78,8 +87,6 @@ public class ScannedBarcodeActivity extends AppCompatActivity {
                         startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(intentData)));
                     }
                 }
-
-
             }
         });
     }

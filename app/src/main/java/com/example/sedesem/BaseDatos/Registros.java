@@ -6,6 +6,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.database.sqlite.SQLiteDatabase;
 import android.icu.util.Output;
+import android.os.AsyncTask;
 import android.os.Bundle;
 
 import android.app.ProgressDialog;
@@ -51,11 +52,14 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
+import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.StringTokenizer;
@@ -67,8 +71,13 @@ import com.example.sedesem.R;
 
 import com.example.sedesem.ScannedBarcodeActivity;
 import com.example.sedesem.VistaRegistro;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
-
+import javax.net.ssl.HttpsURLConnection;
 public class Registros extends AppCompatActivity implements View.OnClickListener {
 
     /*
@@ -80,6 +89,8 @@ public class Registros extends AppCompatActivity implements View.OnClickListener
 
     //database helper object
     private DatabaseHelper db;
+
+    private static final String TAG = "MainActivity";
 
     //View objects
     private Button buttonSave;
@@ -123,10 +134,36 @@ public class Registros extends AppCompatActivity implements View.OnClickListener
 
     private ArrayAdapter<String> adapt;
 
+    int contador;
+
     Vector<String> vecArchs = new Vector<>();
     File[] files;
 
     List<String> lineas = new ArrayList<>();
+
+    public void readWrite(){
+        FirebaseDatabase database = FirebaseDatabase.getInstance();
+        DatabaseReference myRef = database.getReference("message");
+
+        myRef.setValue("Pero que ha pasao'!?");
+
+        // Read from the database
+        myRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                // This method is called once with the initial value and again
+                // whenever data at this location is updated.
+                String value = dataSnapshot.getValue(String.class);
+                Log.d(TAG, "Value is: " + value);
+            }
+
+            @Override
+            public void onCancelled(DatabaseError error) {
+                // Failed to read value
+                Log.w(TAG, "Failed to read value.", error.toException());
+            }
+        });
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -427,11 +464,11 @@ public class Registros extends AppCompatActivity implements View.OnClickListener
         refreshList();
     }
 
-    public void sincronizarMySQL() throws JSONException, IOException {
+    public void sincronizarMySQL() throws JSONException, IOException{
         //DEBEN DEFINIRSE NUEVOS CURSORES PARA CADA TIPO DE ARREGLO QUE SE REQUIERA
         //ArrayList<String> personas = new ArrayList<>();
         ArrayList<Regs> personas = new ArrayList<>();
-        int contador = db.getCounter();
+        contador = db.getCounter();
         Cursor cursor = db.getNames();
         Cursor cNombre = db.getNombres();
         Cursor cApPat = db.getApPats();
@@ -518,7 +555,14 @@ public class Registros extends AppCompatActivity implements View.OnClickListener
             } while (cRegion.moveToNext());
 
         }
+       // new comoquieras(db,names,nombres,apPats,apMats,sexos,FechaNacs,entidads,regions).execute();
+
     }
+    /*@Override
+    protected void onPostExecute(String result) {
+        Toast.makeText(getApplicationContext(), result,
+                Toast.LENGTH_LONG).show();
+    }*/
 
     @Override
     public void onClick(View view) {
@@ -527,6 +571,7 @@ public class Registros extends AppCompatActivity implements View.OnClickListener
                 saveNameToServer();
                 break;
             case R.id.btnSync:
+                readWrite();
                 try {
                     sincronizarMySQL();
                 } catch (JSONException e) {
@@ -537,4 +582,7 @@ public class Registros extends AppCompatActivity implements View.OnClickListener
                 break;
         }
     }
+
+
 }
+

@@ -21,12 +21,13 @@ import androidx.core.content.ContextCompat;
 
 import com.example.sedesem.*;
 import com.example.sedesem.BaseDatos.Registros;
+import com.example.sedesem.BaseDatos.conexionFirebase;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener, ActivityCompat.OnRequestPermissionsResultCallback {
 
     private static final int PERMISSION_REQUEST_CODE = 100;
     protected TextView tvLatitud, tvLongitud, tvAltura, tvPrecision;
-    Button btnTakePicture, btnScanBarcode, btnRegistros;
+    Button btnTakePicture, btnScanBarcode, btnRegistros, btnFirebase;
     private LocationManager locManager;
     private Location loc;
 
@@ -55,10 +56,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         btnTakePicture = findViewById(R.id.btnTakePicture);
         btnScanBarcode = findViewById(R.id.btnScanBarcode);
         btnRegistros = findViewById(R.id.btnRegistros);
+        btnFirebase = findViewById(R.id.btnFirebase);
 
         btnTakePicture.setOnClickListener(this);
         btnScanBarcode.setOnClickListener(this);
         btnRegistros.setOnClickListener(this);
+        btnFirebase.setOnClickListener(this);
 
         requestPermission();
     }
@@ -120,7 +123,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 startActivity(new Intent(MainActivity.this, ScannedBarcodeActivity.class));
                 break;
             case R.id.btnRegistros:
-                startActivity(new Intent(MainActivity.this, Registros.class));
+                startActivity(new Intent(MainActivity.this, conexionFirebase.class));
+                break;
+            case R.id.btnFirebase:
+                startActivity(new Intent(MainActivity.this, regsFire.class));
                 break;
         }
 

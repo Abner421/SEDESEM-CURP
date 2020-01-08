@@ -25,6 +25,7 @@ import java.util.Vector;
 
 import com.example.sedesem.BaseDatos.Registros;
 import com.example.sedesem.BaseDatos.arregloInfo;
+import com.example.sedesem.BaseDatos.conexionFirebase;
 
 public class VistaRegistro extends AppCompatActivity implements View.OnClickListener {
 
@@ -176,8 +177,8 @@ public class VistaRegistro extends AppCompatActivity implements View.OnClickList
   //                      datos.get(5), datos.get(6), Integer.parseInt(datos.get(7)), 0);
 
                 //Función
-                Toast.makeText(getApplicationContext(), "Guardado exitosamente", Toast.LENGTH_SHORT).show();
-                startActivity(new Intent(VistaRegistro.this, Registros.class));
+                Toast.makeText(getApplicationContext(), "Archivo guardado exitosamente", Toast.LENGTH_SHORT).show();
+                startActivity(new Intent(VistaRegistro.this, conexionFirebase.class));
                 break;
         }
     }

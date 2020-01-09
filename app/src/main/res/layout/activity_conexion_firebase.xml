@@ -11,23 +11,34 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical">
+
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="FIREBASE"></TextView>
+            android:layout_gravity="center"
+            android:text="Registros Locales"
+            android:textColor="@android:color/holo_blue_dark"
+            android:textSize="20sp" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
         <Button
             android:id="@+id/buttonSaveFirebase"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="Guardar" />
+            android:text="Escanear" />
 
         <Button
             android:id="@+id/btnSyncFirebase"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="Sincronizar"/>
+            android:text="Sincronizar" />
 
     </LinearLayout>
 
@@ -35,8 +46,6 @@
         android:id="@+id/archs"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"></ListView>
-
-
 
 
 </LinearLayout>

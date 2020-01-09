@@ -3,6 +3,7 @@ package com.example.sedesem.BaseDatos;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Environment;
 import android.util.Log;
@@ -14,6 +15,8 @@ import android.widget.Toast;
 
 import com.example.sedesem.R;
 
+import com.example.sedesem.ScannedBarcodeActivity;
+import com.example.sedesem.VistaRegistro;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -72,10 +75,10 @@ public class conexionFirebase extends AppCompatActivity implements View.OnClickL
         setContentView(R.layout.activity_conexion_firebase);
 
         //Sin conexión
-        FirebaseDatabase.getInstance().setPersistenceEnabled(true);
+        /*FirebaseDatabase.getInstance().setPersistenceEnabled(true);
 
         DatabaseReference curpRef = FirebaseDatabase.getInstance().getReference("registros");
-        curpRef.keepSynced(true);
+        curpRef.keepSynced(true);*/
 
         // [START initialize_database_ref]
         mDatabase = FirebaseDatabase.getInstance().getReference();
@@ -128,41 +131,42 @@ public class conexionFirebase extends AppCompatActivity implements View.OnClickL
         String line;
 
         File sdcard = Environment.getExternalStorageDirectory();
-        File file = new File(sdcard.getAbsolutePath() + "/text/" + vecArchs.lastElement() + ".txt");
+        for (int i = 0; i < vecArchs.size(); i++) {
+            File file = new File(sdcard.getAbsolutePath() + "/text/" + vecArchs.elementAt(i) + ".txt");
+            try {
 
-        try {
+                FileInputStream fileInputStream = new FileInputStream(file);
+                InputStreamReader inputStreamReader = new InputStreamReader(fileInputStream);
+                BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
+                StringBuilder stringBuilder = new StringBuilder();
 
-            FileInputStream fileInputStream = new FileInputStream(file);
-            InputStreamReader inputStreamReader = new InputStreamReader(fileInputStream);
-            BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
-            StringBuilder stringBuilder = new StringBuilder();
+                while ((line = bufferedReader.readLine()) != null) {
+                    stringBuilder.append(line + System.getProperty("line.separator"));
+                    lineas.add(line);
+                }
+                fileInputStream.close();
 
-            while ((line = bufferedReader.readLine()) != null) {
-                stringBuilder.append(line + System.getProperty("line.separator"));
-                lineas.add(line);
+                bufferedReader.close();
+            } catch (FileNotFoundException ex) {
+                //Log.d(TAG, ex.getMessage());
+            } catch (IOException ex) {
+                //Log.d(TAG, ex.getMessage());
             }
-            fileInputStream.close();
-            line = stringBuilder.toString();
 
-            bufferedReader.close();
-        } catch (FileNotFoundException ex) {
-            //Log.d(TAG, ex.getMessage());
-        } catch (IOException ex) {
-            //Log.d(TAG, ex.getMessage());
+            String name = lineas.get(0).trim();
+            String nombre = lineas.get(3);
+            String apPat = lineas.get(1);
+            String apMat = lineas.get(2);
+            String sexo = lineas.get(4);
+            String fechaNac = lineas.get(5);
+            String entidad = lineas.get(6);
+            int region = Integer.parseInt(lineas.get(7));
+
+            agregarRegistro(name, nombre, apPat, apMat, sexo, fechaNac, entidad, region);
+
+            lineas.clear();
         }
 
-
-//      info = new VistaRegistro().getArreglo();
-        final String name = lineas.get(0).trim();
-        final String nombre = lineas.get(3);
-        final String apPat = lineas.get(1);
-        final String apMat = lineas.get(2);
-        final String sexo = lineas.get(4);
-        final String fechaNac = lineas.get(5);
-        final String entidad = lineas.get(6);
-        final int region = Integer.parseInt(lineas.get(7));
-
-        agregarRegistro(name,nombre,apPat,apMat,sexo,fechaNac,entidad,region);
     }
 
     private void agregarRegistro(final String name_id, final String nombre, final String apePat, final String apeMat, final String sexo, final String fechaNac, final String entidad, final int reg){
@@ -186,6 +190,11 @@ public class conexionFirebase extends AppCompatActivity implements View.OnClickL
                         actualizar.put("/registros/"+curp,vals);
 
                         mDatabase.updateChildren(actualizar);
+                        try {
+                            Thread.sleep(200);
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
 
                         Log.e(TAG,"Registro correcto");
                         Toast.makeText(getApplicationContext(), "Correcto", Toast.LENGTH_SHORT).show();
@@ -203,7 +212,7 @@ public class conexionFirebase extends AppCompatActivity implements View.OnClickL
     public void onClick(View v) {
         switch(v.getId()){
             case R.id.buttonSaveFirebase:
-                Toast.makeText(getApplicationContext(),"OK",Toast.LENGTH_SHORT).show();
+                startActivity(new Intent(conexionFirebase.this, ScannedBarcodeActivity.class));
                 break;
             case R.id.btnSyncFirebase:
                 obtenerRegistros();

@@ -7,10 +7,8 @@ import android.os.Environment;
 import android.os.Build;
 import android.util.Log;
 import android.view.View;
-import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.EditText;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -18,13 +16,9 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
 import java.io.*;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Vector;
 
-import com.example.sedesem.BaseDatos.Registros;
-import com.example.sedesem.BaseDatos.arregloInfo;
 import com.example.sedesem.BaseDatos.conexionFirebase;
 
 public class VistaRegistro extends AppCompatActivity implements View.OnClickListener {
@@ -40,9 +34,7 @@ public class VistaRegistro extends AppCompatActivity implements View.OnClickList
     public Vector<String> datos = new Vector<>();
 
     //Arreglo info.
-    Object arrInfo[] = new Object[8];
-
-    Registros base = new Registros();
+    Object[] arrInfo = new Object[8];
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -71,8 +63,7 @@ public class VistaRegistro extends AppCompatActivity implements View.OnClickList
                     File sdcard = Environment.getExternalStorageDirectory();
                     File dir = new File(sdcard.getAbsolutePath() + "/text");
                     if (dir.exists()) {
-                        File file = new File(dir, aux.getNombreArchivo() + ".txt"); //El nombre del archivo debería ser igual que el CURP leído en el QR
-                        //Toast.makeText(getApplicationContext(), "Archivo: " + aux.getNombreArchivo(), Toast.LENGTH_SHORT).show();
+                        File file = new File(dir, ScannedBarcodeActivity.getNombreArchivo() + ".txt"); //El nombre del archivo debería ser igual que el CURP leído en el QR
                         FileOutputStream os = null;
                         StringBuilder texto = new StringBuilder();
                         try {
@@ -80,15 +71,11 @@ public class VistaRegistro extends AppCompatActivity implements View.OnClickList
                             String linea;
                             while ((linea = br.readLine()) != null) {
                                 datos.add(linea); //Posiciones: 0:CURP,1:ApePat,2:ApeMat,3:Nombres,4:Sexo,5:FechaNac,6:Entidad,7:CodigoRegion,8:Longitud,9:Latitud,10:Altura
-                                /*texto.append(linea);
-                                texto.append("\n");*/
                             }
                             br.close();
                         } catch (IOException e) {
                         }
-                        //txtSalida.setText(texto);
-                        /* Aquí deberían llenarse los campos
-                         */
+                        /* Aquí deberían llenarse los campos */
                         CURP.setText(datos.get(0));
                         ApPat.setText(datos.get(1));
                         ApMat.setText(datos.get(2));
@@ -97,9 +84,6 @@ public class VistaRegistro extends AppCompatActivity implements View.OnClickList
                         FechaNac.setText(datos.get(5));
                         Entidad.setText(datos.get(6));
                         Region.setText(datos.get(7));
-
-//                        base.saveNameToLocalStorage(datos.get(0),datos.get(1),datos.get(2), datos.get(3),
-  //                              datos.get(4), datos.get(5), datos.get(6), Integer.parseInt(datos.get(7)),0);
 
                         arrInfo[0] = datos.get(0); //Arreglo de objetos para enviar
                         arrInfo[1] = datos.get(1);
@@ -160,23 +144,7 @@ public class VistaRegistro extends AppCompatActivity implements View.OnClickList
                 startActivity(new Intent(VistaRegistro.this, ScannedBarcodeActivity.class));
                 break;
             case R.id.btnok:
-                //Implementar función para mandar info.
-                com.example.sedesem.BaseDatos.arregloInfo arregloInfo = new arregloInfo(arrInfo);
-
-                try{
-                    String match = "yyyy/mm/dd";
-                    File sdcard = Environment.getExternalStorageDirectory();
-                    File file = new File(sdcard.getAbsolutePath() + "/text");
-                    //DateFormat df = new SimpleDateFormat(match);
-                    Date ultimo = new Date(file.lastModified());
-                    /*String archivo = df.format(ultimo);*/
-                    Toast.makeText(getApplicationContext(), "El archivo es:"+ultimo.toString(), Toast.LENGTH_SHORT).show();
-                }catch(Exception e) { }
-
-//                base.saveNameToLocalStorage(datos.get(0), datos.get(1), datos.get(2), datos.get(3), datos.get(4),
-  //                      datos.get(5), datos.get(6), Integer.parseInt(datos.get(7)), 0);
-
-                //Función
+                //Mensaje de confirmación
                 Toast.makeText(getApplicationContext(), "Archivo guardado exitosamente", Toast.LENGTH_SHORT).show();
                 startActivity(new Intent(VistaRegistro.this, conexionFirebase.class));
                 break;
@@ -186,25 +154,19 @@ public class VistaRegistro extends AppCompatActivity implements View.OnClickList
     //Métodos para la lectura del archivo
     private boolean checkPermission() {
         int result = ContextCompat.checkSelfPermission(VistaRegistro.this, android.Manifest.permission.READ_EXTERNAL_STORAGE);
-        if (result == PackageManager.PERMISSION_GRANTED) {
-            return true;
-        } else {
-            return false;
-        }
+        return result == PackageManager.PERMISSION_GRANTED;
     }
 
     private void requestPermission() {
         if (ActivityCompat.shouldShowRequestPermissionRationale(VistaRegistro.this, android.Manifest.permission.READ_EXTERNAL_STORAGE)) {
-            Toast.makeText(VistaRegistro.this, "Write External Storage permission allows us to read files. Please allow this permission in App Settings.", Toast.LENGTH_LONG).show();
+            Toast.makeText(VistaRegistro.this, "Verifique los permisos de de la aplicación en configuración.", Toast.LENGTH_LONG).show();
         } else {
             ActivityCompat.requestPermissions(VistaRegistro.this, new String[]{android.Manifest.permission.READ_EXTERNAL_STORAGE}, PERMISSION_REQUEST_CODE);
         }
     }
 
-    public Object getArreglo(Object array){ return array; }
-
     @Override
-    public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
         switch (requestCode) {
             case PERMISSION_REQUEST_CODE:
                 if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
@@ -222,9 +184,4 @@ public class VistaRegistro extends AppCompatActivity implements View.OnClickList
         }
         return arrInfo;
     }
-
-    /*public Object getArreglo(){
-        Object[] arreglo = mostrarVector(arrInfo);
-        return arreglo;
-    }*/
 }

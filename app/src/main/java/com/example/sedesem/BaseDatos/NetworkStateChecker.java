@@ -46,7 +46,7 @@ public class NetworkStateChecker extends BroadcastReceiver{
                 if (cursor.moveToFirst()) {
                     do {
                         //calling the method to save the unsynced name to MySQL
-                        saveName(
+                        /*saveName(
                                 cursor.getString(cursor.getColumnIndex(DatabaseHelper.COLUMN_ID)), //CURP
                                 cursor.getString(cursor.getColumnIndex(DatabaseHelper.COLUMN_NOMBRE)),
                                 cursor.getString(cursor.getColumnIndex(DatabaseHelper.COLUMN_APPAT)),
@@ -55,7 +55,7 @@ public class NetworkStateChecker extends BroadcastReceiver{
                                 cursor.getString(cursor.getColumnIndex(DatabaseHelper.COLUMN_FECHANAC)),
                                 cursor.getString(cursor.getColumnIndex(DatabaseHelper.COLUMN_ENTIDAD)),
                                 cursor.getInt(cursor.getColumnIndex(DatabaseHelper.COLUMN_REGION))
-                        );
+                        );*/
                     } while (cursor.moveToNext());
                 }
             }
@@ -68,7 +68,7 @@ public class NetworkStateChecker extends BroadcastReceiver{
      * if the name is successfully sent
      * we will update the status as synced in SQLite
      * */
-    private void saveName(final String id, final String name, final String apPat, final String apMat,
+    /*private void saveName(final String id, final String name, final String apPat, final String apMat,
                           final String sexo, final String fechaNac, final String entidad, final int region) {
         StringRequest stringRequest = new StringRequest(Request.Method.POST, Registros.URL_SAVE_NAME,
                 new Response.Listener<String>() {
@@ -103,5 +103,5 @@ public class NetworkStateChecker extends BroadcastReceiver{
         };
 
         VolleySingleton.getInstance(context).addToRequestQueue(stringRequest);
-    }
+    }*/
 }

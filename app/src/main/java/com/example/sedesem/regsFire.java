@@ -58,29 +58,12 @@ public class regsFire extends AppCompatActivity implements View.OnClickListener 
 
     private void solicitarDatosBase() {
         final ListView registrosFirebase = findViewById(R.id.registrosFirebase);
-        final ArrayList<String> curps = new ArrayList<String>();
+        final ArrayList<String> curps = new ArrayList<>();
         mRootReference.child("registros").addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 for (final DataSnapshot snapshot : dataSnapshot.getChildren()) {
-                    /*mRootReference.child("registros").child(snapshot.getKey()).addValueEventListener(new ValueEventListener() {
-
-                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                            Persona persona = snapshot.getValue(Persona.class);
-                            String nombre = persona.getNombre();
-                            curp = persona.getCurp_id();
-
-                            Log.i("Nombre:", "" + nombre);
-                            Log.i("Curp:", "" + curp);
-
-                            curps.add(persona.getCurp_id());
-                        }
-
-                        @Override
-                        public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                        }
-                    });*/
+                    //Agrega las curps al arreglo para mostrarlas posteriormente
                     Log.i("CURP: ", snapshot.getKey());
                     curps.add(snapshot.getKey());
                 }
@@ -90,10 +73,11 @@ public class regsFire extends AppCompatActivity implements View.OnClickListener 
 
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
-
+                Toast.makeText(regsFire.this, "Falló la operación", Toast.LENGTH_SHORT).show();
             }
         });
 
+        //Adaptador para mostrar los registros presentes en la base de datos
         ArrayAdapter<String> adaptador = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, curps);
         registrosFirebase.setAdapter(adaptador);
     }

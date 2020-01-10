@@ -18,6 +18,42 @@ public class Persona {
     public String fechaNac;
     public String entidad;
     public int region;
+    public String latitud;
+    public String longitud;
+    public String altitud;
+    public String precision;
+
+    public String getLatitud() {
+        return latitud;
+    }
+
+    public void setLatitud(String latitud) {
+        this.latitud = latitud;
+    }
+
+    public String getLongitud() {
+        return longitud;
+    }
+
+    public void setLongitud(String longitud) {
+        this.longitud = longitud;
+    }
+
+    public String getAltitud() {
+        return altitud;
+    }
+
+    public void setAltitud(String altitud) {
+        this.altitud = altitud;
+    }
+
+    public String getPrecision() {
+        return precision;
+    }
+
+    public void setPrecision(String precision) {
+        this.precision = precision;
+    }
 
     public String getCurp_id() {
         return curp_id;
@@ -83,7 +119,9 @@ public class Persona {
         this.region = region;
     }
 
-    public Persona(String curp_id, String apePat, String apeMat, String nombre, String sexo, String fechaNac, String entidad, int region) {
+    public Persona(String curp_id, String apePat, String apeMat, String nombre, String sexo,
+                   String fechaNac, String entidad, int region, String longitud,
+                   String latitud, String altitud, String precision) {
         this.curp_id = curp_id;
         this.apePat = apePat;
         this.apeMat = apeMat;
@@ -92,6 +130,10 @@ public class Persona {
         this.fechaNac = fechaNac;
         this.entidad = entidad;
         this.region = region;
+        this.longitud = longitud;
+        this.latitud = latitud;
+        this.altitud = altitud;
+        this.precision = precision;
     }
 
     public Persona(){
@@ -110,6 +152,10 @@ public class Persona {
         result.put("fechaNac",fechaNac);
         result.put("entidad",entidad);
         result.put("region",region);
+        result.put("longitud", longitud);
+        result.put("latitud", latitud);
+        result.put("altitud", altitud);
+        result.put("precision", precision);
 
         return result;
     }

@@ -169,19 +169,17 @@ public class ScannedBarcodeActivity extends AppCompatActivity {
                                     String sexto = tk.nextToken();
                                     String septimo = tk.nextToken();
                                     String octavo = tk.nextToken();
-                                    /*Toast.makeText(getApplicationContext(), primero + "\n" + segundo + "\n" + tercero
-                                            + "\n" + cuarto + "\n" + quinto + "\n" + sexto + "\n" + septimo + "\n" + octavo, Toast.LENGTH_SHORT).show();*/
 
-                                    //txtBarcodeValue.setText(intentData);
-                                    //btnAction.setVisibility(View.VISIBLE);
                                     btnAction.setText("Agregar a Formulario");
-                                    //Coordenadas de geolocalización
+
+                                    //Coordenadas de geolocalización (generación)
                                     locManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
                                     if (ActivityCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
                                         return;
                                     }
                                     loc = locManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
 
+                                    //Obtiene las coordenadas
                                     String longitud = String.valueOf(loc.getLongitude());
                                     String latitud = String.valueOf(loc.getLatitude());
                                     String altitud = String.valueOf(loc.getAltitude());
@@ -197,11 +195,10 @@ public class ScannedBarcodeActivity extends AppCompatActivity {
                                         File gpxFile = new File(file, primero + ".txt");
                                         FileWriter writer = new FileWriter(gpxFile);
                                         writer.append(primero + "\n" + segundo + "\n" + tercero
-                                                + "\n" + cuarto + "\n" + quinto + "\n" + sexto + "\n" + septimo + "\n" + octavo + "\nLongitud: " + longitud
-                                                + "\nLatitud: " + latitud + "\nAltitud: " + altitud + "\nPrecisión: " + precision);
+                                                + "\n" + cuarto + "\n" + quinto + "\n" + sexto + "\n" + septimo + "\n" + octavo + "\n" + longitud
+                                                + "\n" + latitud + "\n" + altitud + "\n" + precision);
                                         writer.flush();
                                         writer.close();
-                                        //Toast.makeText(getApplicationContext(), "Archivo creado exitosamente", Toast.LENGTH_SHORT).show();
                                     } catch (Exception e) {
                                     }
 
@@ -217,7 +214,6 @@ public class ScannedBarcodeActivity extends AppCompatActivity {
             }
         });
     }
-
 
     @Override
     protected void onPause() {

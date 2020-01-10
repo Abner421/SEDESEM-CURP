@@ -20,7 +20,6 @@
         android:theme="@style/AppTheme">
         <activity android:name=".regsFire"></activity>
         <activity android:name=".BaseDatos.conexionFirebase" />
-        <activity android:name=".BaseDatos.Registros" />
         <activity android:name=".VistaRegistro" />
         <activity android:name=".ScannedBarcodeActivity" />
         <activity android:name=".PictureBarcodeActivity" />

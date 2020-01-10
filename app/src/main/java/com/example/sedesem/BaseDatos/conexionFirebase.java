@@ -13,6 +13,7 @@ import android.widget.Button;
 import android.widget.ListView;
 import android.widget.Toast;
 
+import com.example.sedesem.MainActivity;
 import com.example.sedesem.R;
 
 import com.example.sedesem.ScannedBarcodeActivity;
@@ -31,6 +32,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -47,6 +49,7 @@ public class conexionFirebase extends AppCompatActivity implements View.OnClickL
 
     private Button buttonSaveFirebase;
     private Button btnSyncFirebase;
+    private Button btnHome;
 
     //List to store all the names
     private List<Name> names; //CURP
@@ -74,16 +77,9 @@ public class conexionFirebase extends AppCompatActivity implements View.OnClickL
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_conexion_firebase);
 
-        //Sin conexión
-        /*FirebaseDatabase.getInstance().setPersistenceEnabled(true);
-
-        DatabaseReference curpRef = FirebaseDatabase.getInstance().getReference("registros");
-        curpRef.keepSynced(true);*/
-
         // [START initialize_database_ref]
         mDatabase = FirebaseDatabase.getInstance().getReference();
         // [END initialize_database_ref]
-
 
         names = new ArrayList<>();
         nombres = new ArrayList<>();
@@ -100,9 +96,11 @@ public class conexionFirebase extends AppCompatActivity implements View.OnClickL
 
         btnSyncFirebase = findViewById(R.id.btnSyncFirebase);
         buttonSaveFirebase = findViewById(R.id.buttonSaveFirebase);
+        btnHome = findViewById(R.id.btnHome);
 
         btnSyncFirebase.setOnClickListener(this);
         buttonSaveFirebase.setOnClickListener(this);
+        btnHome.setOnClickListener(this);
 
         try {
             File sdcard = Environment.getExternalStorageDirectory();
@@ -161,33 +159,31 @@ public class conexionFirebase extends AppCompatActivity implements View.OnClickL
             String fechaNac = lineas.get(5);
             String entidad = lineas.get(6);
             int region = Integer.parseInt(lineas.get(7));
+            String longitud = lineas.get(8);
+            String latitud = lineas.get(9);
+            String altitud = lineas.get(10);
+            String precision = lineas.get(11);
 
-            agregarRegistro(name, nombre, apPat, apMat, sexo, fechaNac, entidad, region);
+            agregarRegistro(name, nombre, apPat, apMat, sexo, fechaNac, entidad, region, longitud, latitud, altitud, precision); //Manda el registro para añadir a la base de datos Firebase
 
             lineas.clear();
         }
 
     }
 
-    private void agregarRegistro(final String name_id, final String nombre, final String apePat, final String apeMat, final String sexo, final String fechaNac, final String entidad, final int reg){
+    private void agregarRegistro(final String name_id, final String nombre, final String apePat, final String apeMat,
+                                 final String sexo, final String fechaNac, final String entidad, final int reg,
+                                 final String longitud, final String latitud, final String altitud,
+                                 final String precision) {
         mDatabase.child("registros").child("registros").addListenerForSingleValueEvent(
                 new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-
-                        final String curp = name_id;
-                        String apPat = apePat;
-                        String apMat = apeMat;
-                        String nom = nombre;
-                        String sex = sexo;
-                        String fNac = fechaNac;
-                        String ent = entidad;
-                        int region = reg;
-                        Persona persona = new Persona(curp,apPat,apMat,nom,sex,fNac,ent,region);
+                        Persona persona = new Persona(name_id, apePat, apeMat, nombre, sexo, fechaNac, entidad, reg, longitud, latitud, altitud, precision);
                         Map<String, Object> vals = persona.toMap();
 
                         Map<String, Object> actualizar = new HashMap<>();
-                        actualizar.put("/registros/"+curp,vals);
+                        actualizar.put("/registros/" + name_id, vals);
 
                         mDatabase.updateChildren(actualizar);
                         try {
@@ -216,6 +212,9 @@ public class conexionFirebase extends AppCompatActivity implements View.OnClickL
                 break;
             case R.id.btnSyncFirebase:
                 obtenerRegistros();
+                break;
+            case R.id.btnHome:
+                startActivity(new Intent(conexionFirebase.this, MainActivity.class));
                 break;
         }
     }

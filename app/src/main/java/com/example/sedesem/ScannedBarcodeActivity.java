@@ -196,7 +196,7 @@ public class ScannedBarcodeActivity extends AppCompatActivity {
                                         FileWriter writer = new FileWriter(gpxFile);
                                         writer.append(primero + "\n" + segundo + "\n" + tercero
                                                 + "\n" + cuarto + "\n" + quinto + "\n" + sexto + "\n" + septimo + "\n" + octavo + "\n" + longitud
-                                                + "\n" + latitud + "\n" + altitud + "\n" + precision);
+                                                + "\n" + latitud + "\n" + altitud + "\n" + precision + "\n");
                                         writer.flush();
                                         writer.close();
                                     } catch (Exception e) {

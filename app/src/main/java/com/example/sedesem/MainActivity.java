@@ -37,11 +37,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         ActivityCompat.requestPermissions(MainActivity.this, new String[]{Manifest.permission.CAMERA, Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.ACCESS_COARSE_LOCATION}, 1);
 
-        FirebaseDatabase.getInstance().setPersistenceEnabled(true);
-
-        DatabaseReference curpRef = FirebaseDatabase.getInstance().getReference("registros");
-        curpRef.keepSynced(true);
-
         initViews();
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             return;
@@ -50,7 +45,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             loc = locManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
 
             Posicion(String.valueOf(loc.getLatitude()), String.valueOf(loc.getLongitude()), String.valueOf(loc.getAltitude()), String.valueOf(loc.getAccuracy()));
-            //actualizarPosicion();
         }
 
     }
@@ -82,37 +76,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         res.append(prec + "\n");
 
         return res.toString();
-    }
-
-    private void actualizarPosicion() {
-        LocationManager locManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
-        LocationListener locListener = new LocationListener() {
-            @Override
-            public void onLocationChanged(Location location) {
-                Toast.makeText(MainActivity.this, "Coordenadas GPS actualizadas: " + "lat --->" + location.getLatitude() + "\nlong -->"
-                        + location.getLongitude(), Toast.LENGTH_LONG).show();
-            }
-
-            @Override
-            public void onStatusChanged(String s, int i, Bundle bundle) {
-                Toast.makeText(MainActivity.this, "Cambios en proveedor" + s + "Estado--->" + i, Toast.LENGTH_LONG).show();
-            }
-
-            @Override
-            public void onProviderEnabled(String s) {
-                Toast.makeText(MainActivity.this, "Proveedor habilitado" + s, Toast.LENGTH_LONG).show();
-            }
-
-            @Override
-            public void onProviderDisabled(String s) {
-                Toast.makeText(MainActivity.this, "Proveedor deshabilitado" + s, Toast.LENGTH_LONG).show();
-            }
-        };
-
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            return;
-        }
-        locManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 5000, 0, locListener);
     }
 
     @Override
@@ -159,5 +122,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 }
                 break;
         }
+    }
+
+    private void obtenPersistencia() { //Mantiene los datos de firebase cuando no tiene conexión a internet
+        FirebaseDatabase.getInstance().setPersistenceEnabled(true);
+
+        DatabaseReference curpRef = FirebaseDatabase.getInstance().getReference("registros");
+        curpRef.keepSynced(true);
     }
 }

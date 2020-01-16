@@ -1,5 +1,7 @@
 package com.example.sedesem.BaseDatos;
 
+import android.net.Uri;
+
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.Exclude;
 import com.google.firebase.database.FirebaseDatabase;

@@ -53,7 +53,7 @@ public class VistaRegistro extends AppCompatActivity implements View.OnClickList
 
     String currentPhotoPath;
     private String pictureFilePath;
-    String ruta1, ruta2, ruta3;
+    Uri ruta1, ruta2, ruta3;
     File pic1, pic2, pic3;
 
     File foto = null;
@@ -285,13 +285,13 @@ public class VistaRegistro extends AppCompatActivity implements View.OnClickList
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == 1 && resultCode == RESULT_OK) {
-            File imgFile = new File(pictureFilePath);
-            if (imgFile.exists() && !foto1 && !foto2 && !foto3) {
-                addToGallery(Uri.fromFile(imgFile));
-                ruta1 = Uri.fromFile(imgFile).toString();
-                ivFoto1.setImageURI(Uri.fromFile(imgFile));
+            File imgFile = new File(pictureFilePath); //Crea el archivo y obtiene su ruta
+            if (imgFile.exists() && !foto1 && !foto2 && !foto3) { //Condición para agregar las fotos al imageview que les corresponde
+                addToGallery(Uri.fromFile(imgFile)); //Guarda la foto en la galería
+                ruta1 = Uri.fromFile(imgFile); //Obtiene la ruta de la foto guardada
+                ivFoto1.setImageURI(Uri.fromFile(imgFile)); //Establece la foto al imageview correspondiente
                 try {
-                    agregaRutas(ruta1);
+                    agregaRutas(ruta1); //Añade la ruta al archivo TXT con el registro completo
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
@@ -299,7 +299,7 @@ public class VistaRegistro extends AppCompatActivity implements View.OnClickList
                 contadorFotos.setText("1/3 Fotos");
             } else if (imgFile.exists() && foto1 && !foto2 && !foto3) {
                 addToGallery(Uri.fromFile(imgFile));
-                ruta2 = Uri.fromFile(imgFile).toString();
+                ruta2 = Uri.fromFile(imgFile);
                 ivFoto2.setImageURI(Uri.fromFile(imgFile));
                 try {
                     agregaRutas(ruta2);
@@ -310,7 +310,7 @@ public class VistaRegistro extends AppCompatActivity implements View.OnClickList
                 contadorFotos.setText("2/3 Fotos");
             } else if (imgFile.exists() && foto1 && foto2 && !foto3) {
                 addToGallery(Uri.fromFile(imgFile));
-                ruta3 = Uri.fromFile(imgFile).toString();
+                ruta3 = Uri.fromFile(imgFile);
                 ivFoto3.setImageURI(Uri.fromFile(imgFile));
                 try {
                     agregaRutas(ruta3);
@@ -325,7 +325,7 @@ public class VistaRegistro extends AppCompatActivity implements View.OnClickList
         }
     }
 
-    public void agregaRutas(String rutaFoto) throws IOException {
+    public void agregaRutas(Uri rutaFoto) throws IOException { //Agrega al TXT las rutas donde se está almacenando la foto requerida
         String estado = Environment.getExternalStorageState();
         BufferedWriter bw = null;
         FileWriter fw = null;
@@ -339,7 +339,7 @@ public class VistaRegistro extends AppCompatActivity implements View.OnClickList
                         File file = new File(dir, ScannedBarcodeActivity.getNombreArchivo() + ".txt"); //El nombre del archivo debería ser igual que el CURP leído en el QR
                         fw = new FileWriter(file.getAbsoluteFile(), true);
                         bw = new BufferedWriter(fw);
-                        bw.write(rutaFoto + "+\n");
+                        bw.write(rutaFoto + "\n");
                         bw.close();
                         fw.close();
                     } else {
@@ -370,16 +370,16 @@ public class VistaRegistro extends AppCompatActivity implements View.OnClickList
     }
 
     private void addToGallery(Uri ruta) {
-        String timeStamp = new SimpleDateFormat("yyyyMMddHHmmss").format(new Date());
+        String timeStamp = new SimpleDateFormat("yyyyMMddHHmmss").format(new Date()); //Identificador para evitar reemplazar una imagen ya almecendada
         try {
             // externalStorage
             String ExternalStorageDirectory = Environment.getExternalStorageDirectory() + File.separator;
             // uri de la imagen seleccionada
             Uri uri = ruta;
-            //carpeta "imagenesguardadas"
+            //carpeta "SEDESEM"
             String rutacarpeta = "SEDESEM/";
             // nombre del nuevo png
-            String nombre = "SEDESEM_" + timeStamp + ".png";
+            String nombre = "SEDESEM_" + timeStamp + ".jpg";
 
             // Compruebas si existe la carpeta "imagenesguardadas", sino, la crea
             File directorioImagenes = new File(ExternalStorageDirectory + rutacarpeta);
@@ -392,11 +392,10 @@ public class VistaRegistro extends AppCompatActivity implements View.OnClickList
             int bitmapWidth = 720; // para utilizar width de la imagen original: bitmap.getWidth();
             int bitmapHeight = 1080; // para utilizar height de la imagen original: bitmap.getHeight();
             Bitmap bitmapout = Bitmap.createScaledBitmap(bitmap, bitmapWidth, bitmapHeight, false);
-            //creas el nuevo png en la nueva ruta
-            bitmapout.compress(Bitmap.CompressFormat.PNG, 100, new FileOutputStream(ExternalStorageDirectory + rutacarpeta + nombre));
+            //creas el nuevo jpeg (menor tamaño de archivo) en la nueva ruta
+            bitmapout.compress(Bitmap.CompressFormat.JPEG, 100, new FileOutputStream(ExternalStorageDirectory + rutacarpeta + nombre));
 
             // le pones parametros necesarios a la imagen para que se muestre en cualquier galería
-
             File filefinal = new File(ExternalStorageDirectory + rutacarpeta + nombre);
 
             ContentValues values = new ContentValues();

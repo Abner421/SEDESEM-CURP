@@ -4,6 +4,7 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.util.Log;
@@ -18,11 +19,20 @@ import com.example.sedesem.R;
 
 import com.example.sedesem.ScannedBarcodeActivity;
 import com.example.sedesem.VistaRegistro;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.FirebaseApp;
+import com.google.firebase.FirebaseOptions;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
 
 import org.json.JSONException;
 
@@ -33,14 +43,17 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.math.BigDecimal;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.StringTokenizer;
 import java.util.Vector;
+import java.util.concurrent.atomic.AtomicMarkableReference;
 
-public class conexionFirebase extends AppCompatActivity implements View.OnClickListener{
+public class conexionFirebase extends AppCompatActivity implements View.OnClickListener {
 
     private static final String TAG = "NewPostActivity";
     private static final String REQUIRED = "Required";
@@ -50,6 +63,11 @@ public class conexionFirebase extends AppCompatActivity implements View.OnClickL
     private Button buttonSaveFirebase;
     private Button btnSyncFirebase;
     private Button btnHome;
+    //FirebaseStorage storage = FirebaseStorage.getInstance();
+
+    FirebaseAuth mAuth;
+    FirebaseUser mUser;
+
 
     //List to store all the names
     private List<Name> names; //CURP
@@ -71,11 +89,16 @@ public class conexionFirebase extends AppCompatActivity implements View.OnClickL
     private Object[] info;
     private ListView archs;
 
+    FirebaseStorage storage = FirebaseStorage.getInstance();
+    StorageReference storageRef = storage.getReferenceFromUrl("gs://sedesembd.appspot.com");
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_conexion_firebase);
+        mAuth = FirebaseAuth.getInstance();
+        mUser = mAuth.getCurrentUser();
 
         // [START initialize_database_ref]
         mDatabase = FirebaseDatabase.getInstance().getReference();
@@ -125,14 +148,13 @@ public class conexionFirebase extends AppCompatActivity implements View.OnClickL
 
     }
 
-    public void obtenerRegistros(){
+    public void obtenerRegistros() {
         String line;
 
         File sdcard = Environment.getExternalStorageDirectory();
         for (int i = 0; i < vecArchs.size(); i++) {
             File file = new File(sdcard.getAbsolutePath() + "/text/" + vecArchs.elementAt(i) + ".txt");
             try {
-
                 FileInputStream fileInputStream = new FileInputStream(file);
                 InputStreamReader inputStreamReader = new InputStreamReader(fileInputStream);
                 BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
@@ -165,8 +187,6 @@ public class conexionFirebase extends AppCompatActivity implements View.OnClickL
             String precision = lineas.get(11);
 
             agregarRegistro(name, nombre, apPat, apMat, sexo, fechaNac, entidad, region, longitud, latitud, altitud, precision); //Manda el registro para añadir a la base de datos Firebase
-
-            lineas.clear();
         }
 
     }
@@ -175,6 +195,7 @@ public class conexionFirebase extends AppCompatActivity implements View.OnClickL
                                  final String sexo, final String fechaNac, final String entidad, final int reg,
                                  final String longitud, final String latitud, final String altitud,
                                  final String precision) {
+
         mDatabase.child("registros").child("registros").addListenerForSingleValueEvent(
                 new ValueEventListener() {
                     @Override
@@ -184,6 +205,18 @@ public class conexionFirebase extends AppCompatActivity implements View.OnClickL
 
                         Map<String, Object> actualizar = new HashMap<>();
                         actualizar.put("/registros/" + name_id, vals);
+                        for (int i = 12; i < 15; i++) {
+                            String aux = lineas.get(i).substring(8);
+                            subirFoto(aux);
+                            try {
+                                Thread.sleep(800);
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                            }
+                        }
+
+                        Toast.makeText(getApplicationContext(), "Correcto", Toast.LENGTH_SHORT).show();
+                        lineas.clear(); //Limpia el vector para el siguiente registro
 
                         mDatabase.updateChildren(actualizar);
                         try {
@@ -192,8 +225,7 @@ public class conexionFirebase extends AppCompatActivity implements View.OnClickL
                             e.printStackTrace();
                         }
 
-                        Log.e(TAG,"Registro correcto");
-                        Toast.makeText(getApplicationContext(), "Correcto", Toast.LENGTH_SHORT).show();
+                        Log.e(TAG, "Registro correcto");
                     }
 
                     @Override
@@ -206,7 +238,7 @@ public class conexionFirebase extends AppCompatActivity implements View.OnClickL
 
     @Override
     public void onClick(View v) {
-        switch(v.getId()){
+        switch (v.getId()) {
             case R.id.buttonSaveFirebase:
                 startActivity(new Intent(conexionFirebase.this, ScannedBarcodeActivity.class));
                 break;
@@ -217,5 +249,25 @@ public class conexionFirebase extends AppCompatActivity implements View.OnClickL
                 startActivity(new Intent(conexionFirebase.this, MainActivity.class));
                 break;
         }
+    }
+
+    private void subirFoto(String cadUri) {
+        String original = cadUri.substring(71); //Obtiene la fecha de la creación original del archivo, solo para referencia
+        Uri file = Uri.fromFile(new File(cadUri)); //Obtiene la ruta del archivo original
+        StorageReference refChild = storageRef.child(lineas.get(0)).child("SEDESEM_" + original); //Crea el archivo dentro de la base de datos
+        UploadTask uploadTask = refChild.putFile(file); //Sube el archivo
+        uploadTask.addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception exception) {
+                // Handle unsuccessful uploads
+                Toast.makeText(conexionFirebase.this, "Falló subida de foto", Toast.LENGTH_SHORT).show();
+            }
+        }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+            @Override
+            public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                // taskSnapshot.getMetadata() contains file metadata such as size, content-type, etc.
+                // ...
+            }
+        });
     }
 }

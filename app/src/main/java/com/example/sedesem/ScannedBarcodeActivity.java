@@ -93,8 +93,6 @@ public class ScannedBarcodeActivity extends AppCompatActivity {
 
     protected void initialiseDetectorsAndSources() {
 
-        //Toast.makeText(getApplicationContext(), "Escáner iniciado", Toast.LENGTH_SHORT).show();
-
         barcodeDetector = new BarcodeDetector.Builder(this)
                 .setBarcodeFormats(Barcode.ALL_FORMATS)
                 .build();
@@ -134,7 +132,6 @@ public class ScannedBarcodeActivity extends AppCompatActivity {
         barcodeDetector.setProcessor(new Detector.Processor<Barcode>() {
             @Override
             public void release() {
-                //Toast.makeText(getApplicationContext(), "Escáner detenido para evitar fallos", Toast.LENGTH_SHORT).show();
             }
 
             @Override

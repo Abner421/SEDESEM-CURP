@@ -76,8 +76,6 @@ public class VistaRegistro extends AppCompatActivity implements View.OnClickList
     static final int REQUEST_IMAGE_CAPTURE = 1;
     private static final int CAMERA_REQUEST = 1888;
 
-    ScannedBarcodeActivity aux = new ScannedBarcodeActivity();
-
     public Vector<String> datos = new Vector<>();
 
     //Arreglo info.
@@ -267,7 +265,7 @@ public class VistaRegistro extends AppCompatActivity implements View.OnClickList
                         "com.example.sedesem.fileprovider",
                         pictureFile);
                 cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
-                startActivityForResult(cameraIntent, 1);
+                startActivityForResult(cameraIntent, REQUEST_TAKE_PHOTO);
             }
         }
     }
@@ -284,7 +282,7 @@ public class VistaRegistro extends AppCompatActivity implements View.OnClickList
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == 1 && resultCode == RESULT_OK) {
+        if (requestCode == REQUEST_TAKE_PHOTO && resultCode == RESULT_OK) {
             File imgFile = new File(pictureFilePath); //Crea el archivo y obtiene su ruta
             if (imgFile.exists() && !foto1 && !foto2 && !foto3) { //Condición para agregar las fotos al imageview que les corresponde
                 addToGallery(Uri.fromFile(imgFile)); //Guarda la foto en la galería
@@ -381,7 +379,7 @@ public class VistaRegistro extends AppCompatActivity implements View.OnClickList
             // nombre del nuevo png
             String nombre = "SEDESEM_" + timeStamp + ".jpg";
 
-            // Compruebas si existe la carpeta "imagenesguardadas", sino, la crea
+            // Compruebas si existe la carpeta "SEDESEM", si no la crea
             File directorioImagenes = new File(ExternalStorageDirectory + rutacarpeta);
             if (!directorioImagenes.exists())
                 directorioImagenes.mkdirs();
@@ -399,7 +397,7 @@ public class VistaRegistro extends AppCompatActivity implements View.OnClickList
             File filefinal = new File(ExternalStorageDirectory + rutacarpeta + nombre);
 
             ContentValues values = new ContentValues();
-            values.put(MediaStore.Images.Media.TITLE, "Titulo");
+            values.put(MediaStore.Images.Media.TITLE, "SEDESEM");
             values.put(MediaStore.Images.Media.DESCRIPTION, "Descripción");
             values.put(MediaStore.Images.Media.DATE_TAKEN, System.currentTimeMillis());
             values.put(MediaStore.Images.ImageColumns.BUCKET_ID, filefinal.toString().toLowerCase(Locale.getDefault()).hashCode());

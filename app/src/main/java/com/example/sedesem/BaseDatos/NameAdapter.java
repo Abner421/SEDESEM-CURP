@@ -38,10 +38,7 @@ public class NameAdapter extends ArrayAdapter<Name> {
     public NameAdapter(Context context, int resource, List<Name> names) {
         super(context, resource, names);
         this.context = context;
-        this.names = names;/*
-        this.nombres = nombres;
-        this.ApPats = ApPats;
-        this.ApMats = ApMats;*/
+        this.names = names;
     }
 
     @Override

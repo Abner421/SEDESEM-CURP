@@ -11,6 +11,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.Toast;
 
@@ -60,24 +61,13 @@ public class conexionFirebase extends AppCompatActivity implements View.OnClickL
 
     private DatabaseReference mDatabase;// Referencia base de datos global
 
-    private Button buttonSaveFirebase;
-    private Button btnSyncFirebase;
-    private Button btnHome;
+    private ImageButton buttonSaveFirebase;
+    private ImageButton btnSyncFirebase;
+    private ImageButton btnHome;
     //FirebaseStorage storage = FirebaseStorage.getInstance();
 
-    FirebaseAuth mAuth;
+    FirebaseAuth mAuth; //Requeridos para Firebase-storage
     FirebaseUser mUser;
-
-
-    //List to store all the names
-    private List<Name> names; //CURP
-    private List<Nombre> nombres;
-    private List<ApPat> apPats;
-    private List<ApMat> apMats;
-    private List<Sexo> sexos;
-    private List<FechaNac> FechaNacs;
-    private List<Entidad> entidads;
-    private List<Region> regions;
 
     Vector<String> vecArchs = new Vector<>();
     File[] files;
@@ -86,7 +76,6 @@ public class conexionFirebase extends AppCompatActivity implements View.OnClickL
 
     List<String> lineas = new ArrayList<>();
 
-    private Object[] info;
     private ListView archs;
 
     FirebaseStorage storage = FirebaseStorage.getInstance();
@@ -103,17 +92,6 @@ public class conexionFirebase extends AppCompatActivity implements View.OnClickL
         // [START initialize_database_ref]
         mDatabase = FirebaseDatabase.getInstance().getReference();
         // [END initialize_database_ref]
-
-        names = new ArrayList<>();
-        nombres = new ArrayList<>();
-        apPats = new ArrayList<>();
-        apMats = new ArrayList<>();
-        sexos = new ArrayList<>();
-        FechaNacs = new ArrayList<>();
-        entidads = new ArrayList<>();
-        regions = new ArrayList<>();
-
-        info = new Object[7];
 
         archs = findViewById(R.id.archs);
 
@@ -140,7 +118,6 @@ public class conexionFirebase extends AppCompatActivity implements View.OnClickL
 
             adapt = new ArrayAdapter<>(
                     this, android.R.layout.simple_list_item_1, vecArchs);
-
 
             archs.setAdapter(adapt);
         } catch (Exception e) {
@@ -209,7 +186,7 @@ public class conexionFirebase extends AppCompatActivity implements View.OnClickL
                             String aux = lineas.get(i).substring(8);
                             subirFoto(aux);
                             try {
-                                Thread.sleep(800);
+                                Thread.sleep(800); //Delay para que los registros se suban correctamente
                             } catch (Exception e) {
                                 e.printStackTrace();
                             }
@@ -218,7 +195,7 @@ public class conexionFirebase extends AppCompatActivity implements View.OnClickL
                         Toast.makeText(getApplicationContext(), "Correcto", Toast.LENGTH_SHORT).show();
                         lineas.clear(); //Limpia el vector para el siguiente registro
 
-                        mDatabase.updateChildren(actualizar);
+                        mDatabase.updateChildren(actualizar); //Orden para actualizar firebase con el registro
                         try {
                             Thread.sleep(200);
                         } catch (Exception e) {

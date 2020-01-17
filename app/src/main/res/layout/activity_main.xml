@@ -11,7 +11,7 @@
         android:id="@+id/titulo"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
+        android:layout_marginTop="50dp"
         android:text="Escáner CURP"
         android:textSize="36dp"
         app:layout_constraintEnd_toEndOf="parent"
@@ -31,7 +31,7 @@
         app:layout_constraintStart_toStartOf="@+id/btnScanBarcode"
         app:layout_constraintTop_toTopOf="@+id/btnScanBarcode" />
 
-    <Button
+    <!--<Button
         android:id="@+id/btnScanBarcode"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -41,26 +41,61 @@
         android:textAlignment="center"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent" />-->
 
-    <Button
+    <ImageButton
+        android:id="@+id/btnScanBarcode"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="98dp"
+        android:background="@drawable/qrescaner"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/titulo" />
+
+    <!--<Button
         android:id="@+id/btnRegistros"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="22dp"
         android:width="150dp"
         android:text="Registros"
+        app:layout_constraintEnd_toEndOf="@+id/btnScanBarcode"
+        app:layout_constraintStart_toStartOf="@+id/btnScanBarcode"
+        app:layout_constraintTop_toBottomOf="@+id/btnScanBarcode" />-->
+
+    <ImageButton
+        android:id="@+id/btnRegistros"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="15dp"
+        android:layout_marginTop="21dp"
+        android:background="@drawable/registros"
         app:layout_constraintStart_toStartOf="@+id/btnScanBarcode"
         app:layout_constraintTop_toBottomOf="@+id/btnScanBarcode" />
 
-    <Button
+    <!--<Button
         android:id="@+id/btnFirebase"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="22dp"
         android:width="150dp"
+        android:fontFamily="sans-serif"
         android:text="Firebase"
+        android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+        android:textStyle="bold"
+        android:typeface="normal"
+        app:layout_constraintEnd_toEndOf="@+id/btnRegistros"
         app:layout_constraintStart_toStartOf="@+id/btnRegistros"
+        app:layout_constraintTop_toBottomOf="@+id/btnRegistros" />-->
+
+    <ImageButton
+        android:id="@+id/btnFirebase"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="21dp"
+        android:background="@drawable/firebase"
+        app:layout_constraintEnd_toEndOf="@+id/btnRegistros"
         app:layout_constraintTop_toBottomOf="@+id/btnRegistros" />
 
     <TextView

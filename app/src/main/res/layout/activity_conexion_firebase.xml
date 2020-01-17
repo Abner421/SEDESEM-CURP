@@ -20,44 +20,63 @@
             android:textSize="20sp" />
     </LinearLayout>
 
+    <ListView
+        android:id="@+id/archs"
+        android:layout_width="match_parent"
+        android:layout_height="420dp">
+
+    </ListView>
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginTop="30dp"
+        android:gravity="center_horizontal"
         android:orientation="horizontal">
 
-        <Button
+        <!--<Button
             android:id="@+id/buttonSaveFirebase"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="Escanear" />
+            android:text="Escanear" />-->
+        <ImageButton
+            android:id="@+id/buttonSaveFirebase"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/qrescaner"
+            android:layout_marginRight="60dp" />
 
-        <Button
+        <ImageButton
+            android:id="@+id/btnSyncFirebase"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:background="@drawable/sinc_group" />
+
+        <!--<Button
             android:id="@+id/btnSyncFirebase"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="Sincronizar" />
+            android:text="Sincronizar" />-->
+
 
     </LinearLayout>
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:gravity="center_horizontal"
         android:orientation="horizontal">
 
-        <Button
+        <ImageButton
             android:id="@+id/btnHome"
-            android:layout_width="170dp"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
+            android:layout_width="wrap_content"
+            android:layout_height="78dp"
+            android:background="@drawable/inicio"
             android:text="Inicio" />
+
     </LinearLayout>
-
-    <ListView
-        android:id="@+id/archs"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"></ListView>
-
 
 </LinearLayout>

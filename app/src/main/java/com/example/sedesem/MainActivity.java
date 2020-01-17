@@ -11,6 +11,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -25,7 +26,7 @@ import com.google.firebase.database.FirebaseDatabase;
 public class MainActivity extends AppCompatActivity implements View.OnClickListener, ActivityCompat.OnRequestPermissionsResultCallback {
 
     private static final int PERMISSION_REQUEST_CODE = 100;
-    Button btnTakePicture, btnScanBarcode, btnRegistros, btnFirebase;
+    ImageButton btnTakePicture, btnScanBarcode, btnRegistros, btnFirebase;
     private LocationManager locManager;
     private Location loc;
 
@@ -50,12 +51,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     private void initViews() {
-        btnTakePicture = findViewById(R.id.btnTakePicture);
+        //btnTakePicture = findViewById(R.id.btnTakePicture);
         btnScanBarcode = findViewById(R.id.btnScanBarcode);
         btnRegistros = findViewById(R.id.btnRegistros);
         btnFirebase = findViewById(R.id.btnFirebase);
 
-        btnTakePicture.setOnClickListener(this);
+        //btnTakePicture.setOnClickListener(this);
         btnScanBarcode.setOnClickListener(this);
         btnRegistros.setOnClickListener(this);
         btnFirebase.setOnClickListener(this);
@@ -109,6 +110,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         } else {
             ActivityCompat.requestPermissions(MainActivity.this, new String[]{android.Manifest.permission.WRITE_EXTERNAL_STORAGE}, PERMISSION_REQUEST_CODE);
         }
+        FirebaseDatabase.getInstance().setPersistenceEnabled(true);
+
+        DatabaseReference curpRef = FirebaseDatabase.getInstance().getReference("registros");
+        curpRef.keepSynced(true);
     }
 
     @Override

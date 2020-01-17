@@ -40,12 +40,6 @@ public class regsFire extends AppCompatActivity implements View.OnClickListener 
 
     DatabaseReference mRootReference;
 
-    private TextView regCURP;
-
-    String curp;
-
-    Vector<String> regs;
-
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -64,7 +58,6 @@ public class regsFire extends AppCompatActivity implements View.OnClickListener 
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 for (final DataSnapshot snapshot : dataSnapshot.getChildren()) {
                     //Agrega las curps al arreglo para mostrarlas posteriormente
-                    Log.i("CURP: ", snapshot.getKey());
                     curps.add(snapshot.getKey());
                 }
                 ArrayAdapter adaptar = new ArrayAdapter(regsFire.this, android.R.layout.simple_list_item_1, curps);

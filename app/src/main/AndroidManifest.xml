@@ -18,17 +18,21 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.AppCompat.Light.NoActionBar">
+        <activity android:name=".ui.login.NuevoUsuario"></activity>
+        <activity android:name=".ui.login.VistaSesion">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
         <activity android:name=".regsFire" />
         <activity android:name=".BaseDatos.conexionFirebase" />
         <activity android:name=".VistaRegistro" />
         <activity android:name=".ScannedBarcodeActivity" />
         <activity android:name=".PictureBarcodeActivity" />
         <activity android:name=".MainActivity">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
 
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
         </activity>
 
         <meta-data

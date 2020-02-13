@@ -32,6 +32,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageMetadata;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
@@ -80,6 +81,8 @@ public class conexionFirebase extends AppCompatActivity implements View.OnClickL
 
     FirebaseStorage storage = FirebaseStorage.getInstance();
     StorageReference storageRef = storage.getReferenceFromUrl("gs://sedesembd.appspot.com");
+
+    private String ident = "";
 
 
     @Override
@@ -183,8 +186,15 @@ public class conexionFirebase extends AppCompatActivity implements View.OnClickL
                         Map<String, Object> actualizar = new HashMap<>();
                         actualizar.put("/registros/" + name_id, vals);
                         for (int i = 12; i < 15; i++) {
+                            if (i == 12) {
+                                ident = "A";
+                            } else if (i == 13) {
+                                ident = "B";
+                            } else if (i == 14) {
+                                ident = "C";
+                            }
                             String aux = lineas.get(i).substring(8);
-                            subirFoto(aux);
+                            subirFoto(aux, ident);
                             try {
                                 Thread.sleep(800); //Delay para que los registros se suban correctamente
                             } catch (Exception e) {
@@ -228,10 +238,10 @@ public class conexionFirebase extends AppCompatActivity implements View.OnClickL
         }
     }
 
-    private void subirFoto(String cadUri) {
+    private void subirFoto(String cadUri, String ident) {
         String original = cadUri.substring(71); //Obtiene la fecha de la creación original del archivo, solo para referencia
         Uri file = Uri.fromFile(new File(cadUri)); //Obtiene la ruta del archivo original
-        StorageReference refChild = storageRef.child(lineas.get(0)).child("SEDESEM_" + original); //Crea el archivo dentro de la base de datos
+        StorageReference refChild = storageRef.child(lineas.get(0) + ident); //Crea el archivo dentro de la base de datos
         UploadTask uploadTask = refChild.putFile(file); //Sube el archivo
         uploadTask.addOnFailureListener(new OnFailureListener() {
             @Override
@@ -246,5 +256,28 @@ public class conexionFirebase extends AppCompatActivity implements View.OnClickL
                 // ...
             }
         });
+
+        // Create file metadata including the content type
+        StorageMetadata metadata = new StorageMetadata.Builder()
+                .setContentType("image/jpg")
+                .setCustomMetadata("Hora/Fecha", original)
+                .build();
+
+        // Update metadata properties
+        refChild.updateMetadata(metadata)
+                .addOnSuccessListener(new OnSuccessListener<StorageMetadata>() {
+                    @Override
+                    public void onSuccess(StorageMetadata storageMetadata) {
+                        // Updated metadata is in storageMetadata
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception exception) {
+                        // Uh-oh, an error occurred!
+                        Toast.makeText(conexionFirebase.this, "Falló al incrustar metadatos", Toast.LENGTH_SHORT).show();
+                    }
+                });
+
     }
 }

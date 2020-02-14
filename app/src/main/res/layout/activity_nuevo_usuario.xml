@@ -11,180 +11,210 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
-        android:layout_marginEnd="16dp"
         android:text="Registro de nuevo usuario"
-        app:layout_constraintEnd_toEndOf="@+id/textView5"
-        app:layout_constraintTop_toTopOf="parent" />
-
-    <TextView
-        android:id="@+id/textView5"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="28dp"
-        android:layout_marginTop="36dp"
-        android:text="Opcion de escanear QR de CURP"
-        app:layout_constraintStart_toStartOf="@+id/lector2"
-        app:layout_constraintTop_toBottomOf="@+id/textView4" />
-
-    <SurfaceView
-        android:id="@+id/lector2"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:layout_marginStart="72dp"
-        android:layout_marginTop="16dp"
-        android:layout_marginEnd="72dp"
-        android:layout_marginBottom="18dp"
-        app:layout_constraintBottom_toTopOf="@+id/Nombre"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textView5" />
-
-    <TextView
-        android:id="@+id/textView6"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="36dp"
-        android:layout_marginEnd="70dp"
-        android:text="Nombre:"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/Nombre"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
     <EditText
-        android:id="@+id/Nombre"
+        android:id="@+id/ApePat"
         android:layout_width="0dp"
-        android:layout_height="39dp"
-        android:layout_marginEnd="16dp"
+        android:layout_height="43dp"
+        android:layout_marginTop="43dp"
+        android:layout_marginEnd="15dp"
+        android:layout_marginBottom="43dp"
         android:layout_weight="3"
-        android:hint="Nombre"
+        android:hint="Apellido Paterno"
         android:inputType="none"
-        app:layout_constraintBottom_toBottomOf="@+id/textView6"
+        android:textSize="15dp"
+        app:layout_constraintBottom_toBottomOf="@+id/ApeMat"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/textView6"
-        app:layout_constraintTop_toTopOf="@+id/textView6" />
-
-    <TextView
-        android:id="@+id/textView8"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="36dp"
-        android:layout_marginTop="12dp"
-        android:layout_marginEnd="12dp"
-        android:text="Apellido Materno:"
-        app:layout_constraintEnd_toStartOf="@+id/ApeMat"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/ApePat" />
-
-    <EditText
-        android:id="@+id/ApeMat"
-        android:layout_width="0dp"
-        android:layout_height="39dp"
-        android:layout_marginEnd="16dp"
-        android:layout_weight="3"
-        android:hint="Apellido Materno"
-        android:inputType="none"
-        app:layout_constraintBottom_toBottomOf="@+id/textView8"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/textView8"
-        app:layout_constraintTop_toTopOf="@+id/textView8" />
+        app:layout_constraintStart_toEndOf="@+id/textView7"
+        app:layout_constraintTop_toTopOf="@+id/Nombre" />
 
     <TextView
         android:id="@+id/textView9"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="36dp"
-        android:layout_marginEnd="78dp"
-        android:layout_marginBottom="20dp"
+        android:layout_marginStart="17dp"
+        android:layout_marginEnd="74dp"
+        android:layout_marginBottom="24dp"
         android:text="Correo:"
         app:layout_constraintBottom_toTopOf="@+id/textView10"
         app:layout_constraintEnd_toStartOf="@+id/correo"
         app:layout_constraintStart_toStartOf="parent" />
 
     <EditText
-        android:id="@+id/correo"
+        android:id="@+id/confCorreo"
         android:layout_width="0dp"
-        android:layout_height="39dp"
-        android:layout_marginEnd="16dp"
+        android:layout_height="43dp"
+        android:layout_marginTop="129dp"
+        android:layout_marginEnd="15dp"
+        android:layout_marginBottom="128dp"
         android:layout_weight="3"
         android:hint="Ejemplo@domino.com"
         android:inputType="none"
-        app:layout_constraintBottom_toBottomOf="@+id/textView9"
+        android:textSize="15dp"
+        app:layout_constraintBottom_toTopOf="@+id/pass2"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/textView9"
-        app:layout_constraintTop_toTopOf="@+id/textView9"
-        app:layout_constraintVertical_bias="0.95" />
+        app:layout_constraintStart_toEndOf="@+id/textView10"
+        app:layout_constraintTop_toTopOf="@+id/ApePat" />
+
+    <TextView
+        android:id="@+id/textView8"
+        android:layout_width="wrap_content"
+        android:layout_height="16dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="7dp"
+        android:text="Apellido Materno:"
+        app:layout_constraintBaseline_toBaselineOf="@+id/ApeMat"
+        app:layout_constraintEnd_toStartOf="@+id/ApeMat"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <EditText
+        android:id="@+id/Nombre"
+        android:layout_width="0dp"
+        android:layout_height="43dp"
+        android:layout_marginTop="74dp"
+        android:layout_marginEnd="15dp"
+        android:layout_marginBottom="70dp"
+        android:layout_weight="3"
+        android:hint="Nombre"
+        android:inputType="none"
+        android:textSize="15dp"
+        app:layout_constraintBottom_toBottomOf="@+id/textView8"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/textView6"
+        app:layout_constraintTop_toBottomOf="@+id/textView4" />
 
     <TextView
         android:id="@+id/textView10"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="36dp"
-        android:layout_marginEnd="17dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="13dp"
         android:text="Confirma correo:"
-        app:layout_constraintBottom_toBottomOf="@+id/confCorreo"
+        app:layout_constraintBaseline_toBaselineOf="@+id/confCorreo"
         app:layout_constraintEnd_toStartOf="@+id/confCorreo"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/confCorreo"
-        app:layout_constraintVertical_bias="1.0" />
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <TextView
+        android:id="@+id/textView6"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="66dp"
+        android:layout_marginBottom="26dp"
+        android:text="Nombre:"
+        app:layout_constraintBottom_toTopOf="@+id/textView7"
+        app:layout_constraintEnd_toStartOf="@+id/Nombre"
+        app:layout_constraintStart_toStartOf="parent" />
 
     <EditText
-        android:id="@+id/confCorreo"
+        android:id="@+id/ApeMat"
         android:layout_width="0dp"
-        android:layout_height="39dp"
-        android:layout_marginTop="51dp"
+        android:layout_height="43dp"
+        android:layout_marginTop="179dp"
         android:layout_marginEnd="16dp"
-        android:layout_marginBottom="49dp"
+        android:layout_marginBottom="179dp"
+        android:layout_weight="3"
+        android:hint="Apellido Materno"
+        android:inputType="none"
+        android:textSize="15dp"
+        app:layout_constraintBottom_toBottomOf="@+id/pass1"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/textView8"
+        app:layout_constraintTop_toTopOf="@+id/textView4" />
+
+    <EditText
+        android:id="@+id/correo"
+        android:layout_width="0dp"
+        android:layout_height="43dp"
+        android:layout_marginTop="43dp"
+        android:layout_marginEnd="14dp"
+        android:layout_marginBottom="43dp"
         android:layout_weight="3"
         android:hint="Ejemplo@domino.com"
         android:inputType="none"
-        app:layout_constraintBottom_toTopOf="@+id/btnConfirmar"
+        android:textSize="15dp"
+        app:layout_constraintBottom_toBottomOf="@+id/confCorreo"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/textView10"
-        app:layout_constraintTop_toBottomOf="@+id/textView8"
-        app:layout_constraintVertical_bias="0.0" />
+        app:layout_constraintStart_toEndOf="@+id/textView9"
+        app:layout_constraintTop_toTopOf="@+id/ApeMat" />
 
     <TextView
         android:id="@+id/textView7"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="36dp"
-        android:layout_marginTop="9dp"
-        android:layout_marginEnd="16dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="12dp"
+        android:layout_marginBottom="10dp"
         android:text="Apellido Paterno:"
+        app:layout_constraintBottom_toBottomOf="@+id/ApePat"
         app:layout_constraintEnd_toStartOf="@+id/ApePat"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/Nombre" />
-
-    <EditText
-        android:id="@+id/ApePat"
-        android:layout_width="0dp"
-        android:layout_height="39dp"
-        android:layout_marginEnd="16dp"
-        android:layout_weight="3"
-        android:hint="Apellido Paterno"
-        android:inputType="none"
-        app:layout_constraintBottom_toBottomOf="@+id/textView7"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/textView7"
-        app:layout_constraintTop_toTopOf="@+id/textView7" />
+        app:layout_constraintStart_toStartOf="parent" />
 
     <Button
         android:id="@+id/btnLimpiar"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="99dp"
+        android:layout_marginStart="63dp"
+        android:layout_marginBottom="104dp"
         android:text="Borrar"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/confCorreo" />
+        app:layout_constraintStart_toStartOf="parent" />
 
     <Button
         android:id="@+id/btnConfirmar"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="44dp"
+        android:layout_marginEnd="54dp"
         android:text="Confirmar"
         app:layout_constraintBottom_toBottomOf="@+id/btnLimpiar"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="@+id/btnLimpiar" />
+
+    <TextView
+        android:id="@+id/nuevoPass"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="18dp"
+        android:layout_marginBottom="4dp"
+        android:text="Nueva \n Contraseña :"
+        app:layout_constraintBottom_toBottomOf="@+id/pass1"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <EditText
+        android:id="@+id/pass2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="35dp"
+        android:ems="10"
+        android:inputType="textPassword"
+        app:layout_constraintStart_toStartOf="@+id/pass1"
+        app:layout_constraintTop_toBottomOf="@+id/pass1" />
+
+    <TextView
+        android:id="@+id/confPass"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="17dp"
+        android:layout_marginBottom="4dp"
+        android:text="Confirma\nContraseña :"
+        app:layout_constraintBottom_toBottomOf="@+id/pass2"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <EditText
+        android:id="@+id/pass1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="43dp"
+        android:layout_marginEnd="43dp"
+        android:layout_marginBottom="314dp"
+        android:ems="10"
+        android:inputType="textPassword"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="@+id/confCorreo"
+        app:layout_constraintStart_toEndOf="@+id/confPass" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>

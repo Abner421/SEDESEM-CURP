@@ -11,17 +11,19 @@ import android.location.LocationManager;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Vibrator;
+import android.util.Log;
 import android.util.SparseArray;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
-import com.example.sedesem.MainActivity;
+import com.example.sedesem.BaseDatos.ApPat;
 import com.example.sedesem.R;
-import com.example.sedesem.ScannedBarcodeActivity;
-import com.example.sedesem.VistaRegistro;
+
 import com.google.android.gms.vision.CameraSource;
 import com.google.android.gms.vision.Detector;
 import com.google.android.gms.vision.barcode.Barcode;
@@ -31,14 +33,18 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.StringTokenizer;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
-public class NuevoUsuario extends AppCompatActivity {
+public class NuevoUsuario extends AppCompatActivity implements View.OnClickListener {
 
     //variables globales de inicializacion
     public static String nombreArchivo;
     private Vibrator vibrator;
     SurfaceView lector2;
-    TextView nombre, apeMat, apePat, correo, confCorreo;
+    TextView correo, confCorreo;
+
+    EditText pass1, pass2, Nombre, ApePat, ApeMat;
 
     private BarcodeDetector barcodeDetector;
     private CameraSource cameraSource;
@@ -54,105 +60,89 @@ public class NuevoUsuario extends AppCompatActivity {
 
         btnConfirmar = findViewById(R.id.btnConfirmar);
         btnLimpiar = findViewById(R.id.btnLimpiar);
-        lector2 = findViewById(R.id.lector2);
 
-        nombre = findViewById(R.id.Nombre);
-        apePat = findViewById(R.id.ApePat);
-        apeMat = findViewById(R.id.ApeMat);
-        btnConfirmar.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                //startActivity(new Intent(ScannedBarcodeActivity.this, MainActivity.class));
-            }
-        });
+        Nombre = findViewById(R.id.Nombre);
+        ApePat = findViewById(R.id.ApePat);
+        ApeMat = findViewById(R.id.ApeMat);
+        pass1 = findViewById(R.id.pass1);
+        pass2 = findViewById(R.id.pass2);
 
-        btnLimpiar.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                //startActivity(new Intent(ScannedBarcodeActivity.this, MainActivity.class));
-            }
-        });
+        correo = findViewById(R.id.correo);
+        confCorreo = findViewById(R.id.confCorreo);
 
-        initialiseDetectorsAndSources();
+        btnConfirmar.setOnClickListener(this);
+        btnLimpiar.setOnClickListener(this);
     }
 
-    protected void initialiseDetectorsAndSources() {
+    public boolean validaCorreo() {
+        String a = correo.getText().toString();
+        String b = confCorreo.getText().toString();
 
-        barcodeDetector = new BarcodeDetector.Builder(this)
-                .setBarcodeFormats(Barcode.ALL_FORMATS)
-                .build();
+        // Patrón para validar el email
+        Pattern pattern = Pattern
+                .compile("^[_A-Za-z0-9-\\+]+(\\.[_A-Za-z0-9-]+)*@"
+                        + "[A-Za-z0-9-]+(\\.[A-Za-z0-9]+)*(\\.[A-Za-z]{2,})$");
 
-        cameraSource = new CameraSource.Builder(this, barcodeDetector)
-                .setRequestedPreviewSize(1920, 1080)
-                .setAutoFocusEnabled(true) //you should add this feature
-                .build();
+        String email = correo.getText().toString();
 
-        lector2.getHolder().addCallback(new SurfaceHolder.Callback() {
-            @Override
-            public void surfaceCreated(SurfaceHolder holder) {
-                try {
-                    if (ActivityCompat.checkSelfPermission(NuevoUsuario.this, Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED) {
-                        cameraSource.start(lector2.getHolder());
-                    } else {
-                        ActivityCompat.requestPermissions(NuevoUsuario.this, new
-                                String[]{Manifest.permission.CAMERA}, REQUEST_CAMERA_PERMISSION);
-                    }
-
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
+        Matcher mather = pattern.matcher(email);
+        if (mather.find()) {
+            if (correo.getText().toString().equals(confCorreo.getText().toString())) {
+                return true;
+            } else {
+                confCorreo.setError("No coinciden los correos");
+                return false;
             }
+        } else {
+            correo.setError("correo no valido");
+            return false;
+        }
+    }
 
-            @Override
-            public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {
-            }
+    public boolean armausuario() {
+        String a = Nombre.getText().toString();
+        String b = ApePat.getText().toString();
+        String c = ApeMat.getText().toString();
 
-            @Override
-            public void surfaceDestroyed(SurfaceHolder holder) {
-                cameraSource.stop();
-            }
-        });
+        if (a.isEmpty()) {
+            Nombre.setError("Campo Vacio");
+            return false;
+        } else if (b.isEmpty()) {
+            ApePat.setError("Campo Vacio");
+            return false;
+        } else if (c.isEmpty()) {
+            ApeMat.setError("Campo Vacio");
+            return false;
+        }
+        return true;
+    }
 
+    public boolean validarContrase() {
 
-        barcodeDetector.setProcessor(new Detector.Processor<Barcode>() {
-            @Override
-            public void release() {
-            }
+        String a = pass1.getText().toString();
+        String b = pass2.getText().toString();
 
-            @Override
-            public void receiveDetections(Detector.Detections<Barcode> detections) {
-                final SparseArray<Barcode> barcodes = detections.getDetectedItems();
-                if (barcodes.size() != 0) {
+        if (a.isEmpty() || a.length() < 8) {
+            pass1.setError("Minimo 8 caracteres alfanumericos");
+            return false;
+        } else if (!a.equals(b)) {
+            pass2.setError("No coinciden las contraseñas");
+            return false;
+        }
+        return true;
+    }
 
-                    nombre.post(new Runnable() {
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()) {
+            case R.id.btnConfirmar:
+                armausuario();
+                if (validarContrase() && armausuario() && validaCorreo())
+                    Toast.makeText(this, "ok", Toast.LENGTH_SHORT).show();
+                break;
+            case R.id.btnLimpiar:
 
-                        @Override
-                        public void run() {
-
-                            if (barcodes.valueAt(0).email != null) {
-                                nombre.removeCallbacks(null);
-                                intentData = barcodes.valueAt(0).email.address;
-                                nombre.setText(intentData);
-                            } else {
-                                intentData = barcodes.valueAt(0).displayValue;
-                                if (intentData.contains("|")) {
-                                    long[] patron = {100, 200, 200};
-                                    //vibrator.vibrate(patron, -1);
-                                    StringTokenizer tk = new StringTokenizer(intentData, "|"); //Esto solo funciona si es una CURP
-                                    String primero = tk.nextToken();    //Control
-                                    String LapePat = tk.nextToken();     //Nombre
-                                    String LapeMat = tk.nextToken();
-                                    String Lnombre = tk.nextToken();
-
-                                    nombre.setText(Lnombre);
-                                    apePat.setText(LapePat);
-                                    apeMat.setText(LapeMat);
-                                }
-                            }
-                        }
-                    });
-                }
-            }
-        });
+                break;
+        }
     }
 }

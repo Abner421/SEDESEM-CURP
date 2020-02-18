@@ -227,7 +227,7 @@ public class conexionFirebase extends AppCompatActivity implements View.OnClickL
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.buttonSaveFirebase:
-                startActivity(new Intent(conexionFirebase.this, ScannedBarcodeActivity.class));
+
                 break;
             case R.id.btnSyncFirebase:
                 obtenerRegistros();

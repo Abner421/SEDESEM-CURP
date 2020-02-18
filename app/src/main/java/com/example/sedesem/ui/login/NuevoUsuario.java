@@ -1,19 +1,11 @@
 package com.example.sedesem.ui.login;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.app.ActivityCompat;
 
-import android.Manifest;
-import android.content.Context;
 import android.content.Intent;
-import android.content.pm.PackageManager;
-import android.location.LocationManager;
 import android.os.Bundle;
-import android.os.Environment;
 import android.os.Vibrator;
-import android.util.Log;
-import android.util.SparseArray;
-import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.View;
 import android.widget.Button;
@@ -21,18 +13,28 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.example.sedesem.BaseDatos.ApPat;
+import com.example.sedesem.BaseDatos.conexionFirebase;
+import com.example.sedesem.MainActivity;
 import com.example.sedesem.R;
 
+import com.example.sedesem.ScannedBarcodeActivity;
 import com.google.android.gms.vision.CameraSource;
-import com.google.android.gms.vision.Detector;
-import com.google.android.gms.vision.barcode.Barcode;
 import com.google.android.gms.vision.barcode.BarcodeDetector;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.util.StringTokenizer;
+import com.firebase.ui.auth.AuthUI;
+import com.firebase.ui.auth.IdpResponse;
+
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -43,60 +45,41 @@ public class NuevoUsuario extends AppCompatActivity implements View.OnClickListe
     private Vibrator vibrator;
     SurfaceView lector2;
     TextView correo, confCorreo;
+    private static final int RC_SIGN_IN = 123;
 
     EditText pass1, pass2, Nombre, ApePat, ApeMat;
+
+    public FirebaseUser user;
 
     private BarcodeDetector barcodeDetector;
     private CameraSource cameraSource;
     private static final int REQUEST_CAMERA_PERMISSION = 201;
-    Button btnConfirmar, btnLimpiar;
+    Button btnConfirmar, btnLimpiar, btnRegistraCorreo;
     String intentData = "";
     //----------------------------------------------------------------
+    //********************* conexion firebase **********************************
+    private DatabaseReference mDatabase;// Referencia base de datos global
+    //**************************************************************************
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_nuevo_usuario);
 
-        btnConfirmar = findViewById(R.id.btnConfirmar);
+        // [START initialize_database_ref]
+        mDatabase = FirebaseDatabase.getInstance().getReference();
+        // [END initialize_database_ref]
+
+
         btnLimpiar = findViewById(R.id.btnLimpiar);
+        btnRegistraCorreo = findViewById(R.id.btnRegistraCorreo);
 
         Nombre = findViewById(R.id.Nombre);
         ApePat = findViewById(R.id.ApePat);
         ApeMat = findViewById(R.id.ApeMat);
-        pass1 = findViewById(R.id.pass1);
-        pass2 = findViewById(R.id.pass2);
 
-        correo = findViewById(R.id.correo);
-        confCorreo = findViewById(R.id.confCorreo);
-
-        btnConfirmar.setOnClickListener(this);
         btnLimpiar.setOnClickListener(this);
-    }
-
-    public boolean validaCorreo() {
-        String a = correo.getText().toString();
-        String b = confCorreo.getText().toString();
-
-        // Patrón para validar el email
-        Pattern pattern = Pattern
-                .compile("^[_A-Za-z0-9-\\+]+(\\.[_A-Za-z0-9-]+)*@"
-                        + "[A-Za-z0-9-]+(\\.[A-Za-z0-9]+)*(\\.[A-Za-z]{2,})$");
-
-        String email = correo.getText().toString();
-
-        Matcher mather = pattern.matcher(email);
-        if (mather.find()) {
-            if (correo.getText().toString().equals(confCorreo.getText().toString())) {
-                return true;
-            } else {
-                confCorreo.setError("No coinciden los correos");
-                return false;
-            }
-        } else {
-            correo.setError("correo no valido");
-            return false;
-        }
+        btnRegistraCorreo.setOnClickListener(this);
     }
 
     public boolean armausuario() {
@@ -117,32 +100,92 @@ public class NuevoUsuario extends AppCompatActivity implements View.OnClickListe
         return true;
     }
 
-    public boolean validarContrase() {
+    public void limpieza() {
+        Nombre.setText("");
+        ApePat.setText("");
+        ApeMat.setText("");
+    }
 
-        String a = pass1.getText().toString();
-        String b = pass2.getText().toString();
+    private void agregarRegistro(final String usuario_id, final String nombre, final String apePat, final String apeMat,
+                                 final String correo) {
 
-        if (a.isEmpty() || a.length() < 8) {
-            pass1.setError("Minimo 8 caracteres alfanumericos");
-            return false;
-        } else if (!a.equals(b)) {
-            pass2.setError("No coinciden las contraseñas");
-            return false;
-        }
-        return true;
+        mDatabase.child("usuarios").child("usuarioss").addListenerForSingleValueEvent(
+                new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                        Usuario usuario = new Usuario(usuario_id, nombre, apePat, apeMat, correo);
+                        Map<String, Object> vals = usuario.toMap();
+
+                        Map<String, Object> actualizar = new HashMap<>();
+                        actualizar.put("/usuarios/" + usuario_id, vals);
+
+                        //Toast.makeText(getApplicationContext(), "Correcto", Toast.LENGTH_SHORT).show();
+
+                        mDatabase.updateChildren(actualizar); //Orden para actualizar firebase con el registro
+                        try {
+                            Thread.sleep(200);
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+                        Toast.makeText(NuevoUsuario.this, "Error!", Toast.LENGTH_SHORT).show();
+                    }
+                }
+        );
     }
 
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
-            case R.id.btnConfirmar:
-                armausuario();
-                if (validarContrase() && armausuario() && validaCorreo())
-                    Toast.makeText(this, "ok", Toast.LENGTH_SHORT).show();
+            case R.id.btnRegistraCorreo:
+                if (armausuario()) {
+                    createSignInIntent();
+                }
                 break;
             case R.id.btnLimpiar:
-
+                limpieza();
                 break;
         }
     }
+
+    public void createSignInIntent() {
+        // [START auth_fui_create_intent]
+        // Choose authentication providers
+        List<AuthUI.IdpConfig> providers = Arrays.asList(
+                new AuthUI.IdpConfig.EmailBuilder().build());
+
+        // Create and launch sign-in intent
+        startActivityForResult(
+                AuthUI.getInstance()
+                        .createSignInIntentBuilder()
+                        .setAvailableProviders(providers)
+                        .build(),
+                RC_SIGN_IN);
+        // [END auth_fui_create_intent]
+    }
+
+    // [START auth_fui_result]
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == RC_SIGN_IN) {
+            IdpResponse response = IdpResponse.fromResultIntent(data);
+
+            if (resultCode == RESULT_OK) {
+                // Successfully signed in
+                user = FirebaseAuth.getInstance().getCurrentUser();
+                agregarRegistro(user.getUid(), Nombre.getText().toString(), ApePat.getText().toString(), ApeMat.getText().toString(),
+                        user.getEmail());
+                // ...
+            } else {
+                Toast.makeText(this, "Registro de cuenta fallido", Toast.LENGTH_SHORT).show();
+            }
+        }
+        startActivity(new Intent(NuevoUsuario.this, VistaSesion.class));
+    }
+    // [END auth_fui_result]
 }

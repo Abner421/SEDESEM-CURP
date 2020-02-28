@@ -65,6 +65,7 @@ public class conexionFirebase extends AppCompatActivity implements View.OnClickL
     private ImageButton buttonSaveFirebase;
     private ImageButton btnSyncFirebase;
     private ImageButton btnHome;
+    private ImageButton btnEscaner;
     //FirebaseStorage storage = FirebaseStorage.getInstance();
 
     FirebaseAuth mAuth; //Requeridos para Firebase-storage
@@ -99,11 +100,11 @@ public class conexionFirebase extends AppCompatActivity implements View.OnClickL
         archs = findViewById(R.id.archs);
 
         btnSyncFirebase = findViewById(R.id.btnSyncFirebase);
-        buttonSaveFirebase = findViewById(R.id.buttonSaveFirebase);
+        btnEscaner = findViewById(R.id.btnEscaner);
         btnHome = findViewById(R.id.btnHome);
 
         btnSyncFirebase.setOnClickListener(this);
-        buttonSaveFirebase.setOnClickListener(this);
+        btnEscaner.setOnClickListener(this);
         btnHome.setOnClickListener(this);
 
         try {
@@ -226,8 +227,8 @@ public class conexionFirebase extends AppCompatActivity implements View.OnClickL
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
-            case R.id.buttonSaveFirebase:
-
+            case R.id.btnEscaner:
+                startActivity(new Intent(conexionFirebase.this, ScannedBarcodeActivity.class));
                 break;
             case R.id.btnSyncFirebase:
                 obtenerRegistros();

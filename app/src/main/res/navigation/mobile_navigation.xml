@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/mobile_navigation"
+    app:startDestination="@+id/nav_home">
+
+    <fragment
+        android:id="@+id/nav_home"
+        android:name="com.example.sedesem.ui.home.HomeFragment"
+        android:label="@string/menu_home"
+        tools:layout="@layout/fragment_home">
+        <action
+            android:id="@+id/action_nav_home_to_mainActivity2"
+            app:destination="@id/mainActivity2"
+            app:enterAnim="@anim/fragment_fade_enter"
+            app:exitAnim="@anim/fragment_fade_exit" />
+    </fragment>
+    <activity
+        android:id="@+id/mainActivity2"
+        android:name="com.example.sedesem.MainActivity"
+        android:label="activity_main"
+        tools:layout="@layout/activity_main" />
+    <activity
+        android:id="@+id/conexionFirebase2"
+        android:name="com.example.sedesem.BaseDatos.conexionFirebase"
+        android:label="activity_conexion_firebase"
+        tools:layout="@layout/activity_conexion_firebase" />
+    <activity
+        android:id="@+id/regsFire2"
+        android:name="com.example.sedesem.regsFire"
+        android:label="activity_regs_fire"
+        tools:layout="@layout/activity_regs_fire" />
+    <activity
+        android:id="@+id/scannedBarcodeActivity2"
+        android:name="com.example.sedesem.ScannedBarcodeActivity"
+        android:label="activity_scanned_barcode"
+        tools:layout="@layout/activity_scanned_barcode" />
+
+</navigation>

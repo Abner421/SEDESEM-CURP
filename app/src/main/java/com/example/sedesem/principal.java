@@ -8,10 +8,12 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
 
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.core.view.GravityCompat;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
@@ -27,13 +29,14 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
 import android.view.Menu;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.Toast;
 
 public class principal extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
     private AppBarConfiguration mAppBarConfiguration;
     // [START initialize_auth]
-
 
     // [START declare_auth]
     private FirebaseAuth mAuth;
@@ -45,14 +48,7 @@ public class principal extends AppCompatActivity implements NavigationView.OnNav
         setContentView(R.layout.activity_principal);
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        FloatingActionButton fab = findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
-            }
-        });
+
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
         NavigationView navigationView = findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
@@ -91,7 +87,6 @@ public class principal extends AppCompatActivity implements NavigationView.OnNav
     public boolean onOptionsItemSelected(MenuItem item) { //Este método obtiene los identificadores del menú superior
         switch (item.getItemId()) {
             case R.id.nav_registros:
-                Log.w("KK", "Registros seleccionado");
                 Toast.makeText(this, "Registros fue seleccionado", Toast.LENGTH_SHORT).show();
                 return true;
             case R.id.nav_stats:

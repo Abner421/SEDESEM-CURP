@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Sedesem</string>
+    <string name="app_name">SEDESEM</string>
     <string name="esc_ner_curp">Escáner CURP</string>
     <string name="title_activity_vista_sesion">Ingreso</string>
     <string name="prompt_email">Email</string>
@@ -17,6 +17,8 @@
     <string name="nav_header_subtitle">android.studio@android.com</string>
     <string name="nav_header_desc">Navigation header</string>
     <string name="action_settings">Ajustes</string>
+    <string name="btn_enviar_pwdF">Enviar</string>
+    <string name="btn_cancelar_pwdF">Cancelar</string>
 
     <string name="menu_home">Inicio</string>
     <string name="menu_gallery">Gallery</string>
@@ -25,12 +27,12 @@
     <string name="menu_share">Share</string>
     <string name="menu_send">Send</string>
     <string name="title_activity_login">Ingresar</string>
-    <string name="emailpassword_status_fmt">Email User: %1$s (verified: %2$b)</string>
-    <string name="emailpassword_title_text">Email and Password</string>
+    <string name="emailpassword_status_fmt">Email del usuario: %1$s (verificado: %2$b)</string>
+    <string name="emailpassword_title_text">Correo y contraseña</string>
     <string name="firebase_status_fmt">Firebase UID: %s</string>
     <string name="firebase_user_management">Firebase User Management</string>
-    <string name="signed_in">Signed In</string>
-    <string name="signed_out">Signed Out</string>
-    <string name="auth_failed">Authentication failed</string>
+    <string name="signed_in">Ingresado</string>
+    <string name="signed_out">No ingresado</string>
+    <string name="auth_failed">Falló la autenticación</string>
 
 </resources>

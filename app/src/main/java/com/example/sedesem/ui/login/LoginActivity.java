@@ -3,6 +3,7 @@ package com.example.sedesem.ui.login;
 import android.app.Activity;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 
@@ -18,6 +19,7 @@ import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.view.KeyEvent;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
 import android.widget.Button;
@@ -45,6 +47,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     private TextView mDetailTextView;
     private EditText mEmailField;
     private EditText mPasswordField;
+    private EditText emailForgotten;
 
     // [START declare_auth]
     private FirebaseAuth mAuth;
@@ -60,6 +63,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         mDetailTextView = findViewById(R.id.detail);
         mEmailField = findViewById(R.id.fieldEmail);
         mPasswordField = findViewById(R.id.fieldPassword);
+        emailForgotten = findViewById(R.id.txtEmailForgot);
         //setProgressBar(R.id.progressBar);
 
         // Buttons
@@ -67,6 +71,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         findViewById(R.id.emailCreateAccountButton).setOnClickListener(this);
         findViewById(R.id.signOutButton).setOnClickListener(this);
         findViewById(R.id.verifyEmailButton).setOnClickListener(this);
+        findViewById(R.id.btnForgot).setOnClickListener(this);
 
         // [START initialize_auth]
         // Initialize Firebase Auth
@@ -178,18 +183,44 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 
                         if (task.isSuccessful()) {
                             Toast.makeText(LoginActivity.this,
-                                    "Verification email sent to " + user.getEmail(),
+                                    "Email de verificación enviado a: " + user.getEmail(),
                                     Toast.LENGTH_SHORT).show();
                         } else {
                             Log.e(TAG, "sendEmailVerification", task.getException());
                             Toast.makeText(LoginActivity.this,
-                                    "Failed to send verification email.",
+                                    "Fallo el envío de correo de verificación",
                                     Toast.LENGTH_SHORT).show();
                         }
                         // [END_EXCLUDE]
                     }
                 });
         // [END send_email_verification]
+    }
+
+    public void sendPasswordReset(String email) {
+        // [START send_password_reset]
+        FirebaseAuth auth = FirebaseAuth.getInstance();
+
+        final String emailAddress = email;
+
+        auth.sendPasswordResetEmail(emailAddress)
+                .addOnCompleteListener(new OnCompleteListener<Void>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Void> task) {
+                        if (task.isSuccessful()) {
+                            Log.d(TAG, "Email sent.");
+                            Toast.makeText(LoginActivity.this,
+                                    "El correo de recuperación de contraseña ha sido enviado a" + emailAddress,
+                                    Toast.LENGTH_SHORT).show();
+                        } else {
+                            Log.e(TAG, "sendEmailVerification", task.getException());
+                            Toast.makeText(LoginActivity.this,
+                                    "No se pudo realizar el envío, verifique de nuevo",
+                                    Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                });
+        // [END send_password_reset]
     }
 
     private boolean validateForm() {
@@ -239,6 +270,35 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         }
     }
 
+    public void dialogoEmail() {
+        final AlertDialog dialogBuilder = new AlertDialog.Builder(this).create();
+        LayoutInflater inflater = this.getLayoutInflater();
+        View dialogView = inflater.inflate(R.layout.dialog_pwd, null);
+
+        final EditText email = dialogView.findViewById(R.id.txtEmailForgot);
+        Button btnConfirmar = dialogView.findViewById(R.id.btnSend);
+        Button btnCancelar = dialogView.findViewById(R.id.btnCancel);
+
+        btnConfirmar.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                dialogBuilder.dismiss();
+                Log.w("EMIAL", email.getText().toString());
+                sendPasswordReset(email.getText().toString());
+            }
+        });
+        btnCancelar.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                // DO SOMETHINGS
+                dialogBuilder.dismiss();
+            }
+        });
+
+        dialogBuilder.setView(dialogView);
+        dialogBuilder.show();
+    }
+
     @Override
     public void onClick(View v) {
         int i = v.getId();
@@ -250,6 +310,8 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
             signOut();
         } else if (i == R.id.verifyEmailButton) {
             sendEmailVerification();
+        } else if (i == R.id.btnForgot) {
+            dialogoEmail();
         }
     }
 }

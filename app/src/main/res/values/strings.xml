@@ -34,5 +34,6 @@
     <string name="signed_in">Ingresado</string>
     <string name="signed_out">No ingresado</string>
     <string name="auth_failed">Falló la autenticación</string>
+    <string name="txt_confirmarAuth">Confirmar</string>
 
 </resources>

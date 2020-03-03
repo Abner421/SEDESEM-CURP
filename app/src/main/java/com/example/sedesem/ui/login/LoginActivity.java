@@ -311,6 +311,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
             signOut();
         } else if (i == R.id.verifyEmailButton) {
             sendEmailVerification();
+            signOut();
         } else if (i == R.id.btnForgot) {
             dialogoEmail();
         }

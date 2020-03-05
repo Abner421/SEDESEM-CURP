@@ -5,80 +5,88 @@
     android:layout_height="match_parent">
 
     <LinearLayout
+        android:id="@+id/idVistaNombres"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:layout_gravity="center"
-        android:layout_marginBottom="10dp"
-        android:layout_marginTop="20dp"
-        android:paddingLeft="16dp"
-        android:paddingRight="16dp">
+        android:orientation="vertical"
+        android:layout_gravity="center">
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Nombre(s):"
-            android:layout_margin="18dp"
-            android:layout_gravity="center" />
-
-        <EditText
-            android:id="@+id/txtNombreAuth"
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="38dp"
-            android:layout_gravity="center" />
+            android:orientation="horizontal"
+            android:layout_gravity="center"
+            android:layout_marginBottom="10dp"
+            android:layout_marginTop="20dp"
+            android:paddingLeft="16dp"
+            android:paddingRight="16dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Nombre(s):"
+                android:layout_margin="18dp"
+                android:layout_gravity="center" />
+
+            <EditText
+                android:id="@+id/txtNombreAuth"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="38dp"
+                android:layout_gravity="center" />
 
 
-    </LinearLayout>
+        </LinearLayout>
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:layout_gravity="center"
-        android:layout_marginBottom="10dp"
-        android:layout_marginTop="20dp"
-        android:paddingLeft="16dp"
-        android:paddingRight="16dp">
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Apellido Paterno:"
-            android:layout_margin="18dp"
-            android:layout_gravity="center" />
-
-        <EditText
-            android:id="@+id/txtApePatAuth"
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_gravity="center" />
+            android:orientation="horizontal"
+            android:layout_gravity="center"
+            android:layout_marginBottom="10dp"
+            android:layout_marginTop="20dp"
+            android:paddingLeft="16dp"
+            android:paddingRight="16dp">
 
-    </LinearLayout>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Apellido Paterno:"
+                android:layout_margin="18dp"
+                android:layout_gravity="center" />
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:layout_gravity="center"
-        android:layout_marginBottom="10dp"
-        android:layout_marginTop="20dp"
-        android:paddingLeft="16dp"
-        android:paddingRight="16dp">
+            <EditText
+                android:id="@+id/txtApePatAuth"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center" />
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Apellido Materno:"
-            android:layout_margin="18dp"
-            android:layout_gravity="center" />
+        </LinearLayout>
 
-        <EditText
-            android:id="@+id/txtApeMatAuth"
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_gravity="center" />
+            android:orientation="horizontal"
+            android:layout_gravity="center"
+            android:layout_marginBottom="10dp"
+            android:layout_marginTop="20dp"
+            android:paddingLeft="16dp"
+            android:paddingRight="16dp">
 
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Apellido Materno:"
+                android:layout_margin="18dp"
+                android:layout_gravity="center" />
+
+            <EditText
+                android:id="@+id/txtApeMatAuth"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center" />
+
+        </LinearLayout>
     </LinearLayout>
 
     <LinearLayout

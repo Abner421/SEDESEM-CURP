@@ -58,8 +58,8 @@ public class principal extends AppCompatActivity implements NavigationView.OnNav
     private AppBarConfiguration mAppBarConfiguration;
     private DatabaseReference mDatabase;
 
-    private TextView nombreCuenta;
-    private TextView correoCuenta;
+    private TextView vNombreCuenta;
+    private TextView vCorreoCuenta;
 
     private EditText mNombreAuth;
     private EditText mApePatAuth;
@@ -74,6 +74,8 @@ public class principal extends AppCompatActivity implements NavigationView.OnNav
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        mAuth = FirebaseAuth.getInstance();
+        final FirebaseUser user = mAuth.getCurrentUser();
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_principal);
         Toolbar toolbar = findViewById(R.id.toolbar);
@@ -98,19 +100,13 @@ public class principal extends AppCompatActivity implements NavigationView.OnNav
         //NavigationUI.setupActionBarWithNavController(this, navController, mAppBarConfiguration);
         //NavigationUI.setupWithNavController(navigationView, navController);
         navigationView.getMenu().getItem(0).setChecked(true);
-        // Initialize Firebase Auth
-        mAuth = FirebaseAuth.getInstance();
-        // [END initialize_auth]
-        if (user.getDisplayName().equals("")) {
-            dialogNombre();
-        } else {
-            Log.d("Existe", "Si existe");
-        }
 
-        /*setContentView(R.layout.dialog_nombre);
-        mNombreAuth = findViewById(R.id.txtNombreAuth);
-        mApePatAuth = findViewById(R.id.txtApePatAuth);
-        mApeMatAuth = findViewById(R.id.txtApeMatAuth);*/
+        View headerView = navigationView.getHeaderView(0);              //Todas
+        TextView navUsername = headerView.findViewById(R.id.nombreCuenta);  //Estas líneas de código
+        TextView navEmail = headerView.findViewById(R.id.correoCuenta);    //Son para actualizar el nombre y correo del
+        navUsername.setText(user.getDisplayName());                       //Usuario activo
+        navEmail.setText(user.getEmail());
+
     }
 
     @Override
@@ -247,17 +243,15 @@ public class principal extends AppCompatActivity implements NavigationView.OnNav
         );
     }
 
-    private void updateUI(FirebaseUser user) {
+    /*private void updateUI() {
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+
         nombreCuenta = findViewById(R.id.nombreCuenta);
         correoCuenta = findViewById(R.id.correoCuenta);
 
         nombreCuenta.setText(user.getDisplayName());
         correoCuenta.setText(user.getEmail());
-    }
-
-    private boolean checaUsuario(FirebaseUser usr) {
-        return usr.getDisplayName() != "";
-    }
+    }*/
 
     private boolean validateForm() {
         boolean valid = true;

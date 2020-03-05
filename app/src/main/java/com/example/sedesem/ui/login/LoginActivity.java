@@ -28,6 +28,7 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.sedesem.BaseDatos.Usuario;
 import com.example.sedesem.MainActivity;
 import com.example.sedesem.R;
 import com.example.sedesem.principal;
@@ -38,16 +39,31 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.auth.UserProfileChangeRequest;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 public class LoginActivity extends AppCompatActivity implements View.OnClickListener {
 
     private static final String TAG = "EmailPassword";
+    private DatabaseReference mDatabase;
 
     private TextView mStatusTextView;
     private TextView mDetailTextView;
     private EditText mEmailField;
     private EditText mPasswordField;
     private EditText emailForgotten;
+    private EditText mNombre;
+    private EditText mApePat;
+    private EditText mApeMat;
 
     // [START declare_auth]
     private FirebaseAuth mAuth;
@@ -64,6 +80,10 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         mEmailField = findViewById(R.id.fieldEmail);
         mPasswordField = findViewById(R.id.fieldPassword);
         emailForgotten = findViewById(R.id.txtEmailForgot);
+        mNombre = findViewById(R.id.txtNombreAuth);
+        mApePat = findViewById(R.id.txtApePatAuth);
+        mApeMat = findViewById(R.id.txtApeMatAuth);
+
         //setProgressBar(R.id.progressBar);
 
         // Buttons
@@ -76,6 +96,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         // [START initialize_auth]
         // Initialize Firebase Auth
         mAuth = FirebaseAuth.getInstance();
+        mDatabase = FirebaseDatabase.getInstance().getReference();
         // [END initialize_auth]
     }
 
@@ -245,6 +266,35 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         return valid;
     }
 
+    private boolean validateName() {
+        boolean valid = true;
+        String nombre = mNombre.getText().toString();
+        if (TextUtils.isEmpty(nombre)) {
+            mNombre.setError("Ingresa un correo");
+            valid = false;
+        } else {
+            mNombre.setError(null);
+        }
+
+        String apePat = mApePat.getText().toString();
+        if (TextUtils.isEmpty(apePat)) {
+            mApePat.setError("Ingresa un correo");
+            valid = false;
+        } else {
+            mApePat.setError(null);
+        }
+
+        String apeMat = mApeMat.getText().toString();
+        if (TextUtils.isEmpty(apeMat)) {
+            mApeMat.setError("Ingresa un correo");
+            valid = false;
+        } else {
+            mApeMat.setError(null);
+        }
+
+        return valid;
+    }
+
     private void updateUI(FirebaseUser user) {
         //hideProgressBar();
         if (user != null) {
@@ -258,8 +308,8 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
             findViewById(R.id.btnForgot).setVisibility(View.GONE);
             findViewById(R.id.emailPasswordButtons).setVisibility(View.GONE);
             findViewById(R.id.emailPasswordFields).setVisibility(View.GONE);
+            findViewById(R.id.idVistaNombres).setVisibility(View.VISIBLE);
             findViewById(R.id.signedInButtons).setVisibility(View.VISIBLE);
-
             findViewById(R.id.verifyEmailButton).setEnabled(!user.isEmailVerified());
         } else {
             mStatusTextView.setText(R.string.signed_out);
@@ -268,7 +318,10 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
             findViewById(R.id.emailPasswordButtons).setVisibility(View.VISIBLE);
             findViewById(R.id.emailPasswordFields).setVisibility(View.VISIBLE);
             findViewById(R.id.signedInButtons).setVisibility(View.GONE);
+            findViewById(R.id.idVistaNombres).setVisibility(View.GONE);
         }
+
+
     }
 
     public void dialogoEmail() {
@@ -302,6 +355,8 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 
     @Override
     public void onClick(View v) {
+        final String fecha = new SimpleDateFormat("yyyyMMdd").format(new Date());
+        final FirebaseUser user = mAuth.getCurrentUser();
         int i = v.getId();
         if (i == R.id.emailCreateAccountButton) {
             createAccount(mEmailField.getText().toString(), mPasswordField.getText().toString());
@@ -310,10 +365,59 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         } else if (i == R.id.signOutButton) {
             signOut();
         } else if (i == R.id.verifyEmailButton) {
+            if (!validateName()) {
+                return;
+            }
+            UserProfileChangeRequest profileUpdates = new UserProfileChangeRequest.Builder()
+                    .setDisplayName(mNombre.getText().toString() + " " + mApePat.getText().toString())
+                    .build();
+            user.updateProfile(profileUpdates)
+                    .addOnCompleteListener(new OnCompleteListener<Void>() {
+                        @Override
+                        public void onComplete(@NonNull Task<Void> task) {
+                            if (task.isSuccessful()) {
+                                Log.d(TAG, "User profile updated.");
+                            }
+                        }
+                    });
+            agregarUsuario(mNombre.getText().toString(), mApePat.getText().toString(), mApeMat.getText().toString()
+                    , fecha, user.getUid(), user.getEmail());
             sendEmailVerification();
             signOut();
         } else if (i == R.id.btnForgot) {
             dialogoEmail();
         }
+    }
+
+    private void agregarUsuario(final String nombre, final String apePat, final String apeMat,
+                                final String fecha, final String uid, final String correo) {
+        mDatabase.child("registros").child("usuarios").addListenerForSingleValueEvent(
+                new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                        Usuario usuario = new Usuario(uid, apePat, apeMat, nombre, correo, fecha);
+                        Map<String, Object> vals = usuario.toMap();
+
+                        Map<String, Object> actualizar = new HashMap<>();
+                        actualizar.put("/usuarios/" + uid, vals);
+
+                        Toast.makeText(getApplicationContext(), "Correcto", Toast.LENGTH_SHORT).show();
+
+                        mDatabase.updateChildren(actualizar); //Orden para actualizar firebase con el registro
+                        try {
+                            Thread.sleep(200);
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+
+                        Log.e("Registro", "Registro correcto");
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+                        Toast.makeText(LoginActivity.this, "Error!", Toast.LENGTH_SHORT).show();
+                    }
+                }
+        );
     }
 }

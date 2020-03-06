@@ -101,10 +101,10 @@ public class principal extends AppCompatActivity implements NavigationView.OnNav
         //NavigationUI.setupWithNavController(navigationView, navController);
         navigationView.getMenu().getItem(0).setChecked(true);
 
-        View headerView = navigationView.getHeaderView(0);              //Todas
-        TextView navUsername = headerView.findViewById(R.id.nombreCuenta);  //Estas líneas de código
-        TextView navEmail = headerView.findViewById(R.id.correoCuenta);    //Son para actualizar el nombre y correo del
-        navUsername.setText(user.getDisplayName());                       //Usuario activo
+        View headerView = navigationView.getHeaderView(0);
+        TextView navUsername = headerView.findViewById(R.id.nombreCuenta);
+        TextView navEmail = headerView.findViewById(R.id.correoCuenta);
+        navUsername.setText(user.getDisplayName());
         navEmail.setText(user.getEmail());
 
     }

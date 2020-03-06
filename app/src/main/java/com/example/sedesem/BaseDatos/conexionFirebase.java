@@ -177,12 +177,18 @@ public class conexionFirebase extends AppCompatActivity implements View.OnClickL
                                  final String longitud, final String latitud, final String altitud,
                                  final String precision) {
 
+        mAuth = FirebaseAuth.getInstance();
+        final FirebaseUser user = mAuth.getCurrentUser();
+
+
         mDatabase.child("registros").child("registros").addListenerForSingleValueEvent(
                 new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                         Persona persona = new Persona(name_id, apePat, apeMat, nombre, sexo, fechaNac, entidad, reg, longitud, latitud, altitud, precision);
                         Map<String, Object> vals = persona.toMap();
+                        vals.put("uidUsuario", user.getUid());
+                        vals.put("nombreUsuario", user.getDisplayName());
 
                         Map<String, Object> actualizar = new HashMap<>();
                         actualizar.put("/registros/" + name_id, vals);

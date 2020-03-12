@@ -60,53 +60,35 @@ public class regsFire extends AppCompatActivity implements View.OnClickListener 
         final ArrayList<String> curps = new ArrayList<>();
         final ListView registrosFirebase = findViewById(R.id.registrosFirebase);
 
-        /*final ListView registrosFirebase = findViewById(R.id.registrosFirebase);
-        final ArrayList<String> curps = new ArrayList<>();
-        mRootReference.child("registros").addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                for (final DataSnapshot snapshot : dataSnapshot.getChildren()) {
-                    //Agrega las curps al arreglo para mostrarlas posteriormente
-                    //curps.add(snapshot.getKey());
-                    Query stmt = mRootReference.orderByKey().startAt(user.getUid());
-                            curps.add(stmt);
+        final FirebaseDatabase database = FirebaseDatabase.getInstance();
+        DatabaseReference ref = database.getReference("registros");
 
-                }
-                ArrayAdapter adaptar = new ArrayAdapter(regsFire.this, android.R.layout.simple_list_item_1, curps);
+        ref.orderByChild("uidUsuario").equalTo(user.getUid()).addChildEventListener(new ChildEventListener() {
+            @Override
+            public void onChildAdded(DataSnapshot dataSnapshot, String prevChildKey) {
+                //Log.wtf("wtf", dataSnapshot.getKey());
+                curps.add(dataSnapshot.getKey());
+                //Adaptador para mostrar los registros presentes en la base de datos
+                ArrayAdapter<String> adaptar = new ArrayAdapter<>(regsFire.this, android.R.layout.simple_list_item_1, curps);
                 registrosFirebase.setAdapter(adaptar);
-            }*/
-        mRootReference.orderByChild("uidUsuario").addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot stegoHeightSnapshot) {
-                Query query = mRootReference.orderByKey().startAt(user.getUid());
-                query.addValueEventListener(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(DataSnapshot dataSnapshot) {
-                        // Data is ordered by increasing height, so we want the first entry
-                        //DataSnapshot firstChild = dataSnapshot.getChildren().iterator().next();
-                        for (final DataSnapshot snapshot : dataSnapshot.getChildren()) {
-                            curps.add(snapshot.getKey());
-                            Log.wtf("wtf", snapshot.getKey());
-                        }
-
-                    }
-
-                    @Override
-                    public void onCancelled(DatabaseError databaseError) {
-                        // ...
-                        Log.wtf("wtf", "no srive");
-                    }
-                });
             }
 
+            @Override
+            public void onChildChanged(DataSnapshot dataSnapshot, String prevChildKey) {
+            }
+
+            @Override
+            public void onChildRemoved(DataSnapshot dataSnapshot) {
+            }
+
+            @Override
+            public void onChildMoved(DataSnapshot dataSnapshot, String prevChildKey) {
+            }
 
             @Override
             public void onCancelled(DatabaseError databaseError) {
-                // ...
             }
         });
-
-        //Adaptador para mostrar los registros presentes en la base de datos
         ArrayAdapter<String> adaptador = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, curps);
         registrosFirebase.setAdapter(adaptador);
     }

@@ -83,9 +83,6 @@ public class conexionFirebase extends AppCompatActivity implements View.OnClickL
     FirebaseStorage storage = FirebaseStorage.getInstance();
     StorageReference storageRef = storage.getReferenceFromUrl("gs://sedesembd.appspot.com");
 
-    private String ident = "";
-
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -112,7 +109,6 @@ public class conexionFirebase extends AppCompatActivity implements View.OnClickL
             File file = new File(sdcard.getAbsolutePath() + "/text");
 
             files = file.listFiles();
-
 
             for (int i = 0; i < files.length; i++) {
                 String sub = files[i].getName();
@@ -168,7 +164,10 @@ public class conexionFirebase extends AppCompatActivity implements View.OnClickL
             String precision = lineas.get(11);
 
             agregarRegistro(name, nombre, apPat, apMat, sexo, fechaNac, entidad, region, longitud, latitud, altitud, precision); //Manda el registro para añadir a la base de datos Firebase
+            subirFoto();
+            lineas.clear();
         }
+
 
     }
 
@@ -179,7 +178,6 @@ public class conexionFirebase extends AppCompatActivity implements View.OnClickL
 
         mAuth = FirebaseAuth.getInstance();
         final FirebaseUser user = mAuth.getCurrentUser();
-
 
         mDatabase.child("registros").child("registros").addListenerForSingleValueEvent(
                 new ValueEventListener() {
@@ -192,25 +190,7 @@ public class conexionFirebase extends AppCompatActivity implements View.OnClickL
 
                         Map<String, Object> actualizar = new HashMap<>();
                         actualizar.put("/registros/" + name_id, vals);
-                        for (int i = 12; i < 15; i++) {
-                            if (i == 12) {
-                                ident = "A";
-                            } else if (i == 13) {
-                                ident = "B";
-                            } else if (i == 14) {
-                                ident = "C";
-                            }
-                            String aux = lineas.get(i).substring(8);
-                            subirFoto(aux, ident);
-                            try {
-                                Thread.sleep(800); //Delay para que los registros se suban correctamente
-                            } catch (Exception e) {
-                                e.printStackTrace();
-                            }
-                        }
 
-                        Toast.makeText(getApplicationContext(), "Correcto", Toast.LENGTH_SHORT).show();
-                        lineas.clear(); //Limpia el vector para el siguiente registro
 
                         mDatabase.updateChildren(actualizar); //Orden para actualizar firebase con el registro
                         try {
@@ -228,6 +208,7 @@ public class conexionFirebase extends AppCompatActivity implements View.OnClickL
                     }
                 }
         );
+        //lineas.clear(); //Limpia el vector para el siguiente registro
     }
 
     @Override
@@ -245,26 +226,45 @@ public class conexionFirebase extends AppCompatActivity implements View.OnClickL
         }
     }
 
-    private void subirFoto(String cadUri, String ident) {
-        String original = cadUri.substring(71); //Obtiene la fecha de la creación original del archivo, solo para referencia
+    private void subirFoto() {
+        String ident = "", cadUri = "";
+
+        for (int i = 12; i < 15; i++) {
+            if (i == 12) {
+                ident = "A";
+            } else if (i == 13) {
+                ident = "B";
+            } else if (i == 14) {
+                ident = "C";
+            }
+            cadUri = lineas.get(i).substring(8);
+            try {
+                Thread.sleep(800); //Delay para que los registros se suban correctamente
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
+
         Uri file = Uri.fromFile(new File(cadUri)); //Obtiene la ruta del archivo original
-        StorageReference refChild = storageRef.child(lineas.get(0) + ident); //Crea el archivo dentro de la base de datos
+            final StorageReference refChild = storageRef.child(lineas.get(0) + ident); //Crea el archivo dentro de la base de datos
         UploadTask uploadTask = refChild.putFile(file); //Sube el archivo
         uploadTask.addOnFailureListener(new OnFailureListener() {
             @Override
             public void onFailure(@NonNull Exception exception) {
                 // Handle unsuccessful uploads
-                Toast.makeText(conexionFirebase.this, "Falló subida de foto", Toast.LENGTH_SHORT).show();
+                Toast.makeText(conexionFirebase.this, "Error...!!", Toast.LENGTH_SHORT).show();
             }
         }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
             @Override
             public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
                 // taskSnapshot.getMetadata() contains file metadata such as size, content-type, etc.
                 // ...
+                Toast.makeText(getApplicationContext(), "Correcto", Toast.LENGTH_SHORT).show();
             }
         });
 
-        // Create file metadata including the content type
+        /*// Create file metadata including the content type
+        String original = cadUri.substring(71); //Obtiene la fecha de la creación original del archivo, solo para referencia
         StorageMetadata metadata = new StorageMetadata.Builder()
                 .setContentType("image/jpg")
                 .setCustomMetadata("Hora/Fecha", original)
@@ -284,7 +284,7 @@ public class conexionFirebase extends AppCompatActivity implements View.OnClickL
                         // Uh-oh, an error occurred!
                         Toast.makeText(conexionFirebase.this, "Falló al incrustar metadatos", Toast.LENGTH_SHORT).show();
                     }
-                });
-
+                });*/
+        }
     }
 }

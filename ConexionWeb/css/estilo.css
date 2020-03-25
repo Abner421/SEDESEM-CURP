@@ -1,0 +1,32 @@
+body {
+  display: flex;
+  flex-flow: column wrap;
+  justify-content: center;
+  align-items: center;
+}
+
+a {
+  position: absolute;
+  top: 15px;
+  left: 50px;
+}
+
+#dataTable {
+  text-align: center;
+  margin: auto;
+}
+
+.descarga {
+  height: 50px;
+  width: 260px;
+  background: transparent;
+  display: flex;
+  flex-flow: row wrap;
+  justify-content: space-around;
+  align-items: center;
+  margin-top: 50px;
+}
+
+tr:hover {
+  background-color: #979797
+}

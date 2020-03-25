@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<meta charset="UTF-8">
+	<title>Base de datos</title>
+	<link rel="stylesheet" type="text/css" href="css/estilo.css" media="screen" />
+	<!-- The core Firebase JS SDK is always required and must be listed first -->
+	<script src="https://www.gstatic.com/firebasejs/7.7.0/firebase.js"></script>
+	<script src="https://code.jquery.com/jquery-3.4.1.min.js"
+		integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
+</head>
+
+<body>
+	<h1>Conexión a la base de datos de firebase</h1>
+
+	<table id="dataTable" border-color="#000">
+		<thead>
+			<th>CURP</th>
+			<th>Nombres</th>
+			<th>Apellido Paterno</th>
+			<th>Apellido Materno</th>
+			<th>Sexo</th>
+			<th>Fecha de Nacimiento</th>
+			<th>Entidad</th>
+			<th>Codigo Region</th>
+			<th>Latitud</th>
+			<th>Longitud</th>
+			<th>Altitud</th>
+			<th>Precisión</th>
+			<th>Imagen 1</th>
+			<th>Imagen 2</th>
+			<th>Imagen 3</th>
+		</thead>
+	</table>
+
+	<div class="descarga">
+		<button onclick="tableToExcel('dataTable', 'Registros')">Exportar XLS</button>
+	</div>
+	<div class="CSV">
+		<button onclick="exportTableToCSV('registros.csv')">Exportar CSV</button>
+	</div>
+	<script type="text/javascript" src="js/procesos.js"></script>
+</body>
+
+</html>

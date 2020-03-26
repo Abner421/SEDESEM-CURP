@@ -1,5 +1,6 @@
 // Configuración Firebase
 var firebaseConfig = {
+  //apiKey
   authDomain: "sedesembd.firebaseapp.com",
   databaseURL: "https://sedesembd.firebaseio.com",
   projectId: "sedesembd",
